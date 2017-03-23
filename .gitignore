@@ -4,7 +4,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
@@ -14,7 +13,6 @@ hs_err_pid*
 
 .idea/
 .settings/
-neuroph-2.93b/
 
 IART-FEUP.iml
 .classpath
