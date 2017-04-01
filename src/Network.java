@@ -12,21 +12,20 @@ import java.util.Random;
 public class Network {
     public static void main(String[] args){
 
-        ArrfReader reader1year = new ArrfReader("./dataset/1year.arff");
-        ArrfReader reader2year = new ArrfReader("./dataset/2year.arff");
-        ArrfReader reader3year = new ArrfReader("./dataset/3year.arff");
-        ArrfReader reader4year = new ArrfReader("./dataset/4year.arff");
-        ArrfReader reader5year = new ArrfReader("./dataset/5year.arff");
-
         NeuralNetwork neuralNetwork = createNet();
         neuralNetwork.save("bankruptcy_net.nnet"); //saves the last network version to file that can be opened with NeurophStudio
 
-        //EXAMPLE OF HOW TO QUICK-TEST THE NETWORK (RANDOM)
+        ArrfReader reader1year = new ArrfReader("./dataset/1year.arff");
+
+        //EXAMPLE OF HOW TO QUICK-TEST THE NETWORK using the first company of the first year
         //set network input
-        double[] inputs = new double[64];
-        Random r = new Random();
-        for(int i=0; i<64; i++)
-            inputs[i]= r.nextDouble();
+        ArrayList<Double> inputData = reader1year.getCompanyData(7000);
+
+        double[] inputs = new double[inputData.size()];
+        for (int i = 0; i < inputs.length; i++) {
+            inputs[i] = inputData.get(i);                // java 1.5+ style (outboxing)
+        }
+
         neuralNetwork.setInput(inputs);
         //calculate network
         neuralNetwork.calculate();
@@ -37,6 +36,20 @@ public class Network {
     }
 
     public static NeuralNetwork createNet() {
+        // Load Dataset
+        ArrfReader reader1year = new ArrfReader("./dataset/1year.arff");
+        ArrfReader reader2year = new ArrfReader("./dataset/2year.arff");
+        ArrfReader reader3year = new ArrfReader("./dataset/3year.arff");
+        ArrfReader reader4year = new ArrfReader("./dataset/4year.arff");
+        ArrfReader reader5year = new ArrfReader("./dataset/5year.arff");
+
+        ArrayList<ArrfReader> readerArray = new ArrayList<>();
+        readerArray.add(reader1year);
+        readerArray.add(reader2year);
+        readerArray.add(reader3year);
+        readerArray.add(reader4year);
+        readerArray.add(reader5year);
+
         //create new network
         ArrayList<Integer> layers = new ArrayList<>();
         layers.add(64);
@@ -46,17 +59,16 @@ public class Network {
 
         //create training set
         DataSet trainingSet = new DataSet(64, 1);
-        Random r = new Random();
-        //add training data to training set RANDOM
-        for(int i=0; i<10; i++){
-            double[] inputs = new double[64];
-            for(int j=0; j<64; j++)
-                inputs[j]=r.nextDouble();
-            trainingSet.addRow(new DataSetRow(inputs, new double[]{r.nextInt(2)}));
+
+        //add training data of all years to training set
+        for(ArrfReader reader : readerArray) {
+            for (int i = 0; i < reader.getFullDataSet().size(); i++) {
+                trainingSet.addRow(new DataSetRow(reader.getCompanyData(i), reader.getBankruptcyOfCompany(i)));
+            }
         }
 
         //learn the training set
-        //neuralNetwork.learn(trainingSet);
+        neuralNetwork.learn(trainingSet);
 
         return neuralNetwork;
     }

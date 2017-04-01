@@ -41,13 +41,13 @@ public class ArrfReader {
 
         List<String> dataString = Arrays.asList(this.dataInstances.instance(instanceNum).toString().split(","));
 
-        for(String s : dataString)
+        for(int i = 0; i < dataString.size(); i++)
         {
-            if(s.equalsIgnoreCase("?"))
-            {
+            String s = dataString.get(i);
+
+            if (s.equalsIgnoreCase("?")) {
                 data.add(0d);  // TODO: Verify if this is the best practice
-            }
-            else {
+            } else {
                 data.add(Double.parseDouble(s));
             }
         }
@@ -79,23 +79,31 @@ public class ArrfReader {
         }
     }
     
-    public Double getBankruptcyOfCompany(int companyNum)
+    public ArrayList<Double> getBankruptcyOfCompany(int companyNum)
     {
-        double bankrupt = getCompanyData(companyNum).get(64);
+        ArrayList<Double> ret = new ArrayList<>();
+        double bankrupt = this.fullDataSet.get(companyNum).get(64);
 
         if(bankrupt != 1d && bankrupt != 0d )
         {
-            return -1d;
+            ret.add(-1d);
         }
         
         else
         {
-            return bankrupt;
+            ret.add(bankrupt);
         }
+
+        return ret;
     }
 
     public ArrayList<Double> getCompanyData(int companyNum){
-        return this.fullDataSet.get(companyNum);
+
+        ArrayList<Double> ret = new ArrayList<>(this.fullDataSet.get(companyNum));
+
+        ret.remove(64); // so the bankruptcy result is not included
+
+        return ret;
     }
 
     public ArrayList<ArrayList<Double>> getFullDataSet() {
