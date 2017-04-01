@@ -45,7 +45,7 @@ public class ArrfReader {
         {
             if(s.equalsIgnoreCase("?"))
             {
-                data.add(-1d);  // TODO: Verify if this is the best practice
+                data.add(0d);  // TODO: Verify if this is the best practice
             }
             else {
                 data.add(Double.parseDouble(s));
@@ -78,9 +78,28 @@ public class ArrfReader {
             e.printStackTrace();
         }
     }
+    
+    public Double getBankruptcyOfCompany(int companyNum)
+    {
+        double bankrupt = getCompanyData(companyNum).get(64);
 
-    public ArrayList<Double> getCompanyData(int num){
-        return this.fullDataSet.get(num);
+        if(bankrupt != 1d && bankrupt != 0d )
+        {
+            return -1d;
+        }
+        
+        else
+        {
+            return bankrupt;
+        }
+    }
+
+    public ArrayList<Double> getCompanyData(int companyNum){
+        return this.fullDataSet.get(companyNum);
+    }
+
+    public ArrayList<ArrayList<Double>> getFullDataSet() {
+        return fullDataSet;
     }
 
     public static void main(String[] args) {
@@ -90,4 +109,5 @@ public class ArrfReader {
         System.out.println(reader.getCompanyData(1).get(1));
 
     }
+
 }

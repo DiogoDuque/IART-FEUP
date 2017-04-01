@@ -11,6 +11,13 @@ import java.util.Random;
  */
 public class Network {
     public static void main(String[] args){
+
+        ArrfReader reader1year = new ArrfReader("./dataset/1year.arff");
+        ArrfReader reader2year = new ArrfReader("./dataset/2year.arff");
+        ArrfReader reader3year = new ArrfReader("./dataset/3year.arff");
+        ArrfReader reader4year = new ArrfReader("./dataset/4year.arff");
+        ArrfReader reader5year = new ArrfReader("./dataset/5year.arff");
+
         NeuralNetwork neuralNetwork = createNet();
         neuralNetwork.save("bankruptcy_net.nnet"); //saves the last network version to file that can be opened with NeurophStudio
 
