@@ -53,7 +53,7 @@ public class Network {
         //create new network
         ArrayList<Integer> layers = new ArrayList<>();
         layers.add(64);
-        layers.add(33);
+        layers.add(43);
         layers.add(1);
         NeuralNetwork neuralNetwork = new MultiLayerPerceptron(layers);
 
