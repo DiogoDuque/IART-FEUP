@@ -1,5 +1,7 @@
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Matchable;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -16,6 +18,7 @@ import java.util.List;
  * reader.getCompany(<company_position_in_file>).get(<data_position>);
  */
 public class ArrfReader {
+    public static final double NULLVAL = 1-Math.PI*1.3;
 
     private String filePath;
     private Instances dataInstances;
@@ -46,7 +49,7 @@ public class ArrfReader {
             String s = dataString.get(i);
 
             if (s.equalsIgnoreCase("?")) {
-                data.add(0d);  // TODO: Verify if this is the best practice
+                data.add(NULLVAL); //this will be detected later
             } else {
                 data.add(Double.parseDouble(s));
             }
@@ -109,13 +112,4 @@ public class ArrfReader {
     public ArrayList<ArrayList<Double>> getFullDataSet() {
         return fullDataSet;
     }
-
-    public static void main(String[] args) {
-
-        ArrfReader reader = new ArrfReader("/home/jazz/Downloads/Dane/1year.arff");
-
-        System.out.println(reader.getCompanyData(1).get(1));
-
-    }
-
 }

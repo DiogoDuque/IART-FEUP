@@ -1,10 +1,12 @@
+import org.neuroph.core.Connection;
 import org.neuroph.core.NeuralNetwork;
+import org.neuroph.core.Neuron;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.MultiLayerPerceptron;
+import org.neuroph.nnet.learning.BackPropagation;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Diogo on 22-03-2017.
@@ -55,21 +57,64 @@ public class Network {
         layers.add(64);
         layers.add(43);
         layers.add(1);
-        NeuralNetwork neuralNetwork = new MultiLayerPerceptron(layers);
-
-        //create training set
-        DataSet trainingSet = new DataSet(64, 1);
+        NeuralNetwork<BackPropagation> neuralNetwork = new MultiLayerPerceptron(layers);
 
         //add training data of all years to training set
         for(ArrfReader reader : readerArray) {
-            for (int i = 0; i < reader.getFullDataSet().size(); i++) {
-                trainingSet.addRow(new DataSetRow(reader.getCompanyData(i), reader.getBankruptcyOfCompany(i)));
+            int datasetSize = reader.getFullDataSet().size();
+            for (int i = 0; i < datasetSize; i++) {
+                System.out.println("Progress: "+i+" of "+datasetSize);
+                //check if Bankruptcy value is not missing
+                ArrayList<Double> bankruptcy = reader.getBankruptcyOfCompany(i);
+                if(bankruptcy.get(0)==ArrfReader.NULLVAL)
+                    continue;
+                //backup and remove necessary connections. NN -> NSIM
+                ArrayList<Double> inputs = reader.getCompanyData(i);
+                LinkedHashMap<Integer, List<Connection>> backupConnections = adaptToNSIM(neuralNetwork,inputs);
+                //learn the training set
+                DataSet trainingSet = new DataSet(64, 1);
+                trainingSet.addRow(new DataSetRow(inputs, bankruptcy));
+                neuralNetwork.learn(trainingSet);
+                //reset necessary connections. NSIM -> NN
+                if(backupConnections != null)
+                    adaptToNN(neuralNetwork,backupConnections);
             }
         }
-
-        //learn the training set
-        neuralNetwork.learn(trainingSet);
-
         return neuralNetwork;
+    }
+
+    private static void adaptToNN(NeuralNetwork<BackPropagation> neuralNetwork, LinkedHashMap<Integer, List<Connection>> backupConnections) {
+        ArrayList<Neuron> neurons = new ArrayList<Neuron>(neuralNetwork.getInputNeurons());
+        Iterator<Integer> it = backupConnections.keySet().iterator();
+        do {
+            int n = it.next();
+            Neuron neuron = neurons.get(n);
+            ArrayList<Connection> connections = new ArrayList<Connection>(backupConnections.get(n));
+            for(int i=0; i<connections.size(); i++){
+                Connection connection = connections.get(i);
+                connection.getToNeuron().addInputConnection(neuron,connection.getWeightedInput());
+            }
+        } while(it.hasNext());
+    }
+
+    private static LinkedHashMap<Integer, List<Connection>> adaptToNSIM(NeuralNetwork<BackPropagation> neuralNetwork, ArrayList<Double> inputs) {
+        //find MVs positions
+        ArrayList<Integer> missingValues = new ArrayList<Integer>();
+        for(int i=0; i<inputs.size(); i++){
+            if(inputs.get(i)==ArrfReader.NULLVAL)
+                missingValues.add(i);
+        }
+        if(missingValues.size()==0)
+            return null;
+
+        //adapt network
+        LinkedHashMap<Integer, List<Connection>> connectionsBackup = new LinkedHashMap<Integer, List<Connection>>();
+        ArrayList<Neuron> neurons = new ArrayList<Neuron>(neuralNetwork.getInputNeurons());
+        for(int i=0; i<missingValues.size(); i++) {
+            Neuron neuron = neurons.get(i);
+            connectionsBackup.put(i,neuron.getOutConnections());
+            neuron.removeAllOutputConnections();
+        }
+        return connectionsBackup;
     }
 }
