@@ -5,6 +5,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.neuroph.core.Connection;
 import org.neuroph.core.NeuralNetwork;
@@ -12,6 +20,7 @@ import org.neuroph.core.Neuron;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.learning.BackPropagation;
+import org.neuroph.util.data.sample.SubSampling;
 
 public class LearningThread  extends Thread{
 	private NeuralNetwork<BackPropagation> neuralNetwork;
@@ -46,42 +55,77 @@ public class LearningThread  extends Thread{
 			learn();
 			
 			accuracy = test();
-			System.out.println("Accuracy: " + accuracy);
+			System.out.println("\nAccuracy: " + accuracy);
+			
+			if(accuracy < 0.5)
+				neuralNetwork.randomizeWeights(new Random());
+			
 			
 			double currentTime = System.currentTimeMillis();
 			System.out.println("Time taken: " + (currentTime - lastTime));
 			lastTime = currentTime;
+			
+			System.out.println("--------------------------\n----------------------");
 		}
 	}
 
 	private void learn(){
 		for(String key : trainingSets.keySet()){
 			//Uncomment for only full values;
-			if(!key.equals("[0, 0, 0]"))
-				continue;
+			//if(!key.equals("[0, 0, 0]"))
+				//continue;
 			
 			DataSet set = trainingSets.get(key);
-			System.out.println("\nSet: " + key);
+			DataSet trainSet = set.createTrainingAndTestSubsets(100,0)[0];
+			System.out.println("Set: " + key);
 			//neuralNetwork.learn(set);
 
 			//backup and remove necessary connections. NN -> NSIM
-			System.out.println("Taking out connections");
+			//System.out.println("Taking out connections");
             LinkedHashMap<Integer, List<Connection>> backupConnections = adaptToNSIM(neuralNetwork, key);
             
+            
+            
+            
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Boolean> future = executor.submit(new Learner(trainSet));
+            try {
+                future.get(1, TimeUnit.SECONDS); //timeout is in 2 seconds
+            } catch (TimeoutException | InterruptedException | ExecutionException e) {
+                System.err.println("Timeout");
+                neuralNetwork.stopLearning();
+                
+            }
+            executor.shutdownNow();
+            
+            
             //learn the training set
-            System.out.println("Learning");
-        	neuralNetwork.learn(set);
+            //System.out.println("Learning");
+        	//neuralNetwork.learn(set);
             
         	
         	//reset necessary connections. NSIM -> NN
-        	System.out.println("Restoring connections");
+        	//System.out.println("Restoring connections");
             if(backupConnections != null)
                 adaptToNN(neuralNetwork, backupConnections);
             
             
 		}
-		System.out.println("--------------------------\n--------------------");
+
 		
+	}
+	
+	private class Learner implements Callable<Boolean>{
+	    private final DataSet set;
+
+	    public Learner(DataSet set) {
+	        this.set = set;
+	    }
+
+	    public Boolean call() throws Exception {
+	        neuralNetwork.learn(set);
+	        return true;
+	    }
 	}
 	
 	
@@ -94,7 +138,8 @@ public class LearningThread  extends Thread{
             ArrayList<Connection> connections = new ArrayList<Connection>(backupConnections.get(n));
             for(int i=0; i<connections.size(); i++){
                 Connection connection = connections.get(i);
-                connection.getToNeuron().addInputConnection(neuron,connection.getWeightedInput());
+                //connection.getToNeuron().addInputConnection(neuron,connection.getWeightedInput());
+                neuralNetwork.createConnection(neuron, connection.getToNeuron(), connection.getWeight().getValue());
             }
         } while(it.hasNext());
     }

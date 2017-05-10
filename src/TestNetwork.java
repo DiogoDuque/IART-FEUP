@@ -6,6 +6,8 @@ import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.learning.BackPropagation;
+import org.neuroph.nnet.learning.DynamicBackPropagation;
+import org.neuroph.nnet.learning.MomentumBackpropagation;
 
 
 
@@ -17,6 +19,12 @@ public class TestNetwork {
 		layers.add(2);
 		layers.add(1);
 		NeuralNetwork<BackPropagation> neuralNetwork = new MultiLayerPerceptron(layers);
+		MomentumBackpropagation bp = new MomentumBackpropagation();
+		bp.setMomentum(0.3);//*/
+		bp.setMaxError(0.01);
+		//BackPropagation bp = new BackPropagation();
+		bp.setLearningRate(0.1);
+		neuralNetwork.setLearningRule(bp);
 		
 		generateTrainingSet();
 		DataSet trainingSet = generateTrainingSet();
@@ -45,7 +53,7 @@ public class TestNetwork {
 			
 			
 			//Uncomment to generate nulls
-			/*double MC = r.nextDouble();
+			double MC = r.nextDouble();
 			if (MC < 0.01)
 				red = ArrfReader.NULLVAL;
 			else if(MC < 0.02)
@@ -53,7 +61,7 @@ public class TestNetwork {
 			else if(MC < 0.03)
 				green = ArrfReader.NULLVAL;
 			else if(MC < 0.04)
-				res = ArrfReader.NULLVAL;*/
+				res = ArrfReader.NULLVAL;
 			
 			set.addRow(new DataSetRow(new double[]{red, blue, green}, new double[]{res}));
 		}
