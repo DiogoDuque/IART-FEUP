@@ -76,32 +76,29 @@ public class LearningThread  extends Thread{
 				//continue;
 			
 			DataSet set = trainingSets.get(key);
-			DataSet trainSet = set.createTrainingAndTestSubsets(100,0)[0];
 			System.out.println("Set: " + key);
-			//neuralNetwork.learn(set);
+			//DataSet trainSet = set.createTrainingAndTestSubsets(100,0)[0];
+			
 
 			//backup and remove necessary connections. NN -> NSIM
-			//System.out.println("Taking out connections");
             LinkedHashMap<Integer, List<Connection>> backupConnections = adaptToNSIM(neuralNetwork, key);
             
-            
-            
-            
-            ExecutorService executor = Executors.newSingleThreadExecutor();
+   
+            /*ExecutorService executor = Executors.newSingleThreadExecutor();
             Future<Boolean> future = executor.submit(new Learner(trainSet));
             try {
-                future.get(1, TimeUnit.SECONDS); //timeout is in 2 seconds
+                future.get(5, TimeUnit.SECONDS); //timeout is in 2 seconds
             } catch (TimeoutException | InterruptedException | ExecutionException e) {
                 System.err.println("Timeout");
                 neuralNetwork.stopLearning();
                 
             }
-            executor.shutdownNow();
+            executor.shutdownNow();*/
+            
             
             
             //learn the training set
-            //System.out.println("Learning");
-        	//neuralNetwork.learn(set);
+        	neuralNetwork.learn(set);
             
         	
         	//reset necessary connections. NSIM -> NN
@@ -189,8 +186,13 @@ public class LearningThread  extends Thread{
 			trainingSets.get(mvCode).add(row);
 		}
 		
-		for(DataSet set : trainingSets.values())
+		/*
+		for(DataSet set : trainingSets.values()){
+			System.out.println("Train");
 			set.shuffle();
+			for(DataSetRow row : set.getRows())
+				System.out.println(row);
+		}*/
 	}
 
 	private byte[] getMissingValues(double[] input) {

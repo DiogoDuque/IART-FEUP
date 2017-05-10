@@ -8,6 +8,7 @@ import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.learning.BackPropagation;
 import org.neuroph.nnet.learning.DynamicBackPropagation;
 import org.neuroph.nnet.learning.MomentumBackpropagation;
+import org.neuroph.util.TransferFunctionType;
 
 
 
@@ -18,10 +19,11 @@ public class TestNetwork {
 		layers.add(3);
 		layers.add(2);
 		layers.add(1);
-		NeuralNetwork<BackPropagation> neuralNetwork = new MultiLayerPerceptron(layers);
+		NeuralNetwork<BackPropagation> neuralNetwork = new MultiLayerPerceptron(layers, TransferFunctionType.SIGMOID);
 		MomentumBackpropagation bp = new MomentumBackpropagation();
 		bp.setMomentum(0.3);//*/
-		bp.setMaxError(0.01);
+		bp.setMaxError(0.0001);
+		bp.setMaxIterations(1000);//This thing here :(
 		//BackPropagation bp = new BackPropagation();
 		bp.setLearningRate(0.1);
 		neuralNetwork.setLearningRule(bp);
@@ -30,6 +32,7 @@ public class TestNetwork {
 		DataSet trainingSet = generateTrainingSet();
 		
 		DataSet testingSet = generateTestingSet();
+		
 		
 		LearningThread trainer = new LearningThread(neuralNetwork, trainingSet, testingSet, 0.98);
 		trainer.run();

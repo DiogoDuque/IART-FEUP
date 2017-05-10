@@ -58,6 +58,7 @@ public class Network {
         layers.add(43);
         layers.add(1);
         NeuralNetwork<BackPropagation> neuralNetwork = new MultiLayerPerceptron(layers);
+        neuralNetwork.getLearningRule().setMaxIterations(100);
 
         //add training data of all years to training set
         for(ArrfReader reader : readerArray) {
