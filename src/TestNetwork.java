@@ -1,5 +1,7 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
@@ -34,10 +36,34 @@ public class TestNetwork {
 		DataSet testingSet = generateTestingSet();
 		
 		
-		LearningThread trainer = new LearningThread(neuralNetwork, trainingSet, testingSet, 0.98);
-		trainer.run();
+		LearningThread trainer = new LearningThread();
+		trainer.trainUntilAccurate(neuralNetwork, trainingSet, 0.98);
+
+		
+		double[] rgb = readRGB();
+		
+		neuralNetwork.setInput(rgb);
+		neuralNetwork.calculate();
+		double[] networkOutput = neuralNetwork.getOutput();
+		
+		System.out.println("Result: " + networkOutput[0]);
 		
 		
+	}
+
+	private static double[] readRGB() {
+		System.out.println("Input a color(RGB), with each value between 0..1. Result: 1 if R+G+B > 1.5, 0 otherwise. ");
+		
+		double[] rgb = new double[3];
+		Scanner in = new Scanner(System.in);
+		System.out.print("Red  : ");
+		rgb[0] = in.nextDouble();
+		System.out.print("Green: ");
+		rgb[1] = in.nextDouble();
+		System.out.print("Blue : ");
+		rgb[2] = in.nextDouble();
+
+		return rgb;
 	}
 
 	private static DataSet generateTrainingSet() {
