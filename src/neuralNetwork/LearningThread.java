@@ -1,3 +1,4 @@
+package neuralNetwork;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class LearningThread{
 
 
 	
-	public void train(NeuralNetwork<BackPropagation> neuralNetwork, DataSet set) {
+	public double train(NeuralNetwork<BackPropagation> neuralNetwork, DataSet set) {
 		this.neuralNetwork = neuralNetwork;
 		this.set = set;
 		
@@ -61,6 +62,7 @@ public class LearningThread{
 		//Get elapsed time
 		double delta = System.currentTimeMillis() - lastTime;
 		printStatus(accuracy, delta);
+		return accuracy;
 	}
 	
 	

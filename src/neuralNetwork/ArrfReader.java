@@ -1,3 +1,4 @@
+package neuralNetwork;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Matchable;
