@@ -18,6 +18,7 @@ public class NetworkPanel extends JPanel {
 	private static final String[] datasets = {"test", "1year", "2year", "3year", "4year", "5year"};
 	
 	private Network network;
+	private CalculationPanel calcPanel;
 	
 	private JButton trainNetworkBtn;
 	private JComboBox<String> datasetComboBox;
@@ -31,23 +32,18 @@ public class NetworkPanel extends JPanel {
 	private JSpinner learningRate;
 	private JSpinner momentum;
 	
-	public NetworkPanel(final Network network){
+	public NetworkPanel(final Network network, final CalculationPanel calcPanel){
 		super();
 		
 		this.network = network;
-		
+		this.calcPanel = calcPanel;
 		
 		this.setLayout(null);
 		
 		trainNetworkBtn = new JButton("Train");
 		trainNetworkBtn.setBounds(600, 11, 90, 51);
 		trainNetworkBtn.addActionListener(new ActionListener() {
-		       public void actionPerformed(ActionEvent ae){
-		    	   /*reset();
-		    	   String file = (String) datasetComboBox.getSelectedItem();
-		    	   double accuracy = Network.train(network.getNetwork(), file);
-		    	   result(accuracy);*/
-		    	   
+		       public void actionPerformed(ActionEvent ae){		    	   
 		    	   SwingWorker<Double, Object> swingWorker = new SwingWorker<Double, Object>() {
 		               @Override
 		               protected Double doInBackground() throws Exception {
@@ -116,7 +112,7 @@ public class NetworkPanel extends JPanel {
 		this.add(maxErrorLbl);
 		
 		maxIterations = new JSpinner();
-		maxIterations.setModel(new SpinnerNumberModel(0, 0,10000, 1));
+		maxIterations.setModel(new SpinnerNumberModel(1000, 0,10000, 1));
 		maxIterations.setBounds(300, 42, 90, 20);
 		this.add(maxIterations);
 		
@@ -151,7 +147,9 @@ public class NetworkPanel extends JPanel {
 	}
 
 	private void reset() {
+		network.setReady(false);
 		trainNetworkBtn.setEnabled(false);
+		calcPanel.getCalculateButton().setEnabled(false);
 		accuracyLbl.setVisible(false);
 		accuracyTextLbl.setVisible(false);
 		stateLabel.setText("Learning...");
@@ -159,7 +157,9 @@ public class NetworkPanel extends JPanel {
 	} 
 	
 	private void result(double accuracy) {
+		network.setReady(true);
 		trainNetworkBtn.setEnabled(true);
+		calcPanel.getCalculateButton().setEnabled(true);
 		accuracyLbl.setText(String.format( "%.2f", accuracy*100 ) + " %");
 		accuracyLbl.setVisible(true);
 		accuracyTextLbl.setVisible(true);

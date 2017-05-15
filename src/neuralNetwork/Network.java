@@ -19,6 +19,7 @@ import java.util.*;
 public class Network {
 	NeuralNetwork<BackPropagation> network;
 	MomentumBackpropagation rule;
+	boolean ready = false;
 	
 	
 	
@@ -35,20 +36,23 @@ public class Network {
 		rule.setLearningRate(0.3);
 	}
 	
-	
-
 
 	public NeuralNetwork<BackPropagation> getNetwork() {
 		return network;
 	}
 
-
-
-
 	public MomentumBackpropagation getRule() {
 		return rule;
 	}
 
+
+	public boolean isReady() {
+		return ready;
+	}
+
+	public void setReady(boolean ready) {
+		this.ready = ready;
+	}
 
 
 
@@ -78,12 +82,13 @@ public class Network {
 	}
  
 	
-    private static void ask(NeuralNetwork<BackPropagation> neuralNetwork, double[] input) {
+	public static double ask(NeuralNetwork<BackPropagation> neuralNetwork, double[] input) {
     	neuralNetwork.setInput(input);
 		neuralNetwork.calculate();
 		double[] networkOutput = neuralNetwork.getOutput();
 		
 		System.out.println("Result: " + networkOutput[0]);
+		return networkOutput[0];
 		
 	}
 
