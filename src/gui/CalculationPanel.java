@@ -61,8 +61,10 @@ public class CalculationPanel extends JPanel {
 		    	   else
 		    		   data = manual.getData();
 		    	   
-		    	   if(data == null)
+		    	   if(data == null){
+		    		   resultLabel.setText("Error");
 		    		   return;
+		    	   }
 		    	   
 		    	   double result = Network.ask(network.getNetwork(), data);
 		    	   

@@ -5,6 +5,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import neuralNetwork.ArrfReader;
+
 public class AutomaticInputPanel extends JPanel {
 	private JTextField textField;
 	/**
@@ -27,9 +29,28 @@ public class AutomaticInputPanel extends JPanel {
 	}
 	
 	public double[] getData(){
-		textField.getText();
-		//TODO
-		return null;
+		String value = textField.getText();
+		if (value.equals(""))
+			return null;
+		
+		String[] values = value.split(",");
+		if (values.length < 64)
+			return null;
+		
+		double[] data = new double[64];
+		for(int i = 0; i < 64; i++){
+			try
+			{
+				data[i] = Double.valueOf(values[i]);
+			}
+			catch(NumberFormatException e)
+			{
+				System.err.println(values[i]);
+				return null;
+			}
+		}
+		
+		return data;
 	}
 
 }

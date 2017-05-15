@@ -112,7 +112,7 @@ public class NetworkPanel extends JPanel {
 		this.add(maxErrorLbl);
 		
 		maxIterations = new JSpinner();
-		maxIterations.setModel(new SpinnerNumberModel(1000, 0,10000, 1));
+		maxIterations.setModel(new SpinnerNumberModel(1000, 0,1000000, 1));
 		maxIterations.setBounds(300, 42, 90, 20);
 		this.add(maxIterations);
 		
@@ -153,6 +153,11 @@ public class NetworkPanel extends JPanel {
 		accuracyLbl.setVisible(false);
 		accuracyTextLbl.setVisible(false);
 		stateLabel.setText("Learning...");
+		
+		network.getRule().setMomentum((Double)momentum.getValue());
+		network.getRule().setMaxIterations((Integer)maxIterations.getValue());
+		network.getRule().setLearningRate((Double)learningRate.getValue());
+		network.getRule().setMaxError((Double)maxError.getValue());
 		
 	} 
 	

@@ -44,7 +44,7 @@ public class NetworkGui extends JFrame {
 		
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 880, 726);
+		setBounds(100, 100, 880, 756);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -54,16 +54,17 @@ public class NetworkGui extends JFrame {
 		
 		JPanel manualInput = new ManualInputPanel();
 		manualInput.setBorder(new LineBorder(new Color(0, 0, 0)));
-		manualInput.setBounds(10, 96, 854, 436);
+		manualInput.setBounds(10, 96, 854, 461);
 		contentPane.add(manualInput);
 		
 		JPanel automaticInput = new AutomaticInputPanel();
-		automaticInput.setBounds(10, 543, 854, 67);
+		automaticInput.setBounds(10, 568, 854, 74);
 		automaticInput.setBorder(new LineBorder(new Color(0, 0, 0)));
 		contentPane.add(automaticInput);
 		
 		JPanel calculationPanel = new CalculationPanel(network, (ManualInputPanel)manualInput, (AutomaticInputPanel)automaticInput);
-		calculationPanel.setBounds(10, 621, 854, 65);
+		calculationPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
+		calculationPanel.setBounds(10, 653, 854, 65);
 		contentPane.add(calculationPanel);
 		
 		JPanel panel = new NetworkPanel(network, (CalculationPanel)calculationPanel );
