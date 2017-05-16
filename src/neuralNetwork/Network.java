@@ -11,6 +11,7 @@ import org.neuroph.util.TransferFunctionType;
 
 import weka.filters.unsupervised.attribute.Normalize;
 
+import javax.xml.crypto.Data;
 import java.util.*;
 
 /**
@@ -95,28 +96,29 @@ public class Network {
 
 	public static double train(NeuralNetwork<BackPropagation> neuralNetwork, String filename) {
     	DataSet set = createDataSet(filename, neuralNetwork.getInputsCount(), neuralNetwork.getOutputsCount());
-    	normalize(set);
+    	DataSet normalizedSet = normalize(set);
     	
 		LearningThread trainer = new LearningThread();
-		return trainer.train(neuralNetwork, set);
+		return trainer.train(neuralNetwork, normalizedSet);
 	}
 	
 	public static void trainUntilAccurate(NeuralNetwork<BackPropagation> neuralNetwork, String filename) {
     	DataSet set = createDataSet(filename, neuralNetwork.getInputsCount(), neuralNetwork.getOutputsCount());
-    	normalize(set);
+		DataSet normalizedSet = normalize(set);
     	
 		LearningThread trainer = new LearningThread();
-		trainer.trainUntilAccurate(neuralNetwork, set, 0.8);
+		trainer.trainUntilAccurate(neuralNetwork, normalizedSet, 0.8);
 	}
 
 
-    private static void normalize(DataSet set) {
-		// TODO Auto-generated method stub
+    private static DataSet normalize(DataSet set) {
+
+		return Normalizer.minMaxNormalization(set, -1, 1);
 		
 	}
 
 
-	private static DataSet createDataSet(String filename, int inputs_number, int outputs_number) {
+	static DataSet createDataSet(String filename, int inputs_number, int outputs_number) {
     	ArrfReader reader = new ArrfReader("./dataset/"+ filename + ".arff");
     	ArrayList<ArrayList<Double>> setData = reader.getFullDataSet();
     	DataSet set = new DataSet(inputs_number, outputs_number);
