@@ -15,7 +15,7 @@ import javax.swing.SwingWorker;
 import neuralNetwork.Network;
 
 public class NetworkPanel extends JPanel {
-	private static final String[] datasets = {"test", "1year", "2year", "3year", "4year", "5year"};
+	private static final String[] datasets = {"test2", "test", "1year", "2year", "3year", "4year", "5year"};
 	
 	private Network network;
 	private CalculationPanel calcPanel;
