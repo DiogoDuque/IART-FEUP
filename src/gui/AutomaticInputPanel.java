@@ -7,6 +7,8 @@ import javax.swing.SwingConstants;
 
 import neuralNetwork.ArrfReader;
 
+import static neuralNetwork.ArrfReader.NULLVAL;
+
 public class AutomaticInputPanel extends JPanel {
 	private JTextField textField;
 	/**
@@ -34,14 +36,21 @@ public class AutomaticInputPanel extends JPanel {
 			return null;
 		
 		String[] values = value.split(",");
-		if (values.length < 64)
-			return null;
+		if (values.length != 64) {
+            System.err.println("Wrong number of input. Must be 64 instead of: " + values.length);
+            return null;
+        }
 		
 		double[] data = new double[64];
 		for(int i = 0; i < 64; i++){
 			try
 			{
-				data[i] = Double.valueOf(values[i]);
+				if(values[i].equalsIgnoreCase("?")) {
+					data[i] = NULLVAL;	// so it allows people to declare missing values on the automatic input field
+				}
+				else {
+					data[i] = Double.valueOf(values[i]);
+				}
 			}
 			catch(NumberFormatException e)
 			{

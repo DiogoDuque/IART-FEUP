@@ -5,6 +5,7 @@ import org.neuroph.core.data.DataSetRow;
 
 import java.util.Arrays;
 
+import static neuralNetwork.ArrfReader.NULLVAL;
 import static neuralNetwork.Network.createDataSet;
 
 public class Normalizer {
@@ -20,7 +21,7 @@ public class Normalizer {
 
         for(int i = 1; i < array.length; i++)
         {
-            if(array[i] < min)
+            if(array[i] < min && array[i] != NULLVAL)
                 min = array[i];
         }
 
@@ -33,7 +34,7 @@ public class Normalizer {
 
         for(int i = 1; i < array.length; i++)
         {
-            if(array[i] > max)
+            if(array[i] > max && array[i] != NULLVAL)
                 max = array[i];
         }
 
@@ -56,10 +57,10 @@ public class Normalizer {
 
             for(int j = 0; j < input.length; j++)
             {
-                if(input[j] < minimumValues[j])
+                if(input[j] < minimumValues[j] && input[j] != NULLVAL)
                     minimumValues[j] = input[j];
 
-                if(input[j] > maximumValues[j])
+                if(input[j] > maximumValues[j] && input[j] != NULLVAL)
                     maximumValues[j] = input[j];
             }
         }
@@ -71,7 +72,8 @@ public class Normalizer {
 
             for(int j = 0; j < input.length; j++)
             {
-                input[j] = minMaxNormalization(minimumValues[j], maximumValues[j], input[j], rangeMin, rangeMax);
+                if(input[j] != NULLVAL)
+                    input[j] = minMaxNormalization(minimumValues[j], maximumValues[j], input[j], rangeMin, rangeMax);
             }
         }
 

@@ -19,7 +19,7 @@ import java.util.List;
  * reader.getCompany(<company_position_in_file>).get(<data_position>);
  */
 public class ArrfReader {
-    public static final double NULLVAL = 1-Math.PI*1.3;
+    public static final double NULLVAL = Double.MIN_VALUE;
 
     private String filePath;
     private Instances dataInstances;
