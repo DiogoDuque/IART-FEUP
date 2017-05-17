@@ -7,7 +7,10 @@ import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.learning.BackPropagation;
 import org.neuroph.nnet.learning.MomentumBackpropagation;
+import org.neuroph.nnet.learning.ResilientPropagation;
 import org.neuroph.util.TransferFunctionType;
+import org.neuroph.util.data.norm.MaxMinNormalizer;
+import org.neuroph.util.data.norm.Normalizer;
 
 import weka.filters.unsupervised.attribute.Normalize;
 
@@ -27,12 +30,11 @@ public class Network {
 		super();
 		this.network = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 64, 43, 1);
 		this.rule = new MomentumBackpropagation();
-		
 		network.setLearningRule(rule);
 		
 		rule.setMomentum(0.8);//*/
-		rule.setMaxError(0.0001);
-		rule.setMaxIterations(1000);//This thing here :(
+		rule.setMaxError(0.01);
+		rule.setMaxIterations(100);//This thing here :(
 		rule.setLearningRate(0.3);
 	}
 	
@@ -57,15 +59,15 @@ public class Network {
 
 
 	public static void main(String[] args){
-		NeuralNetwork<BackPropagation> neuralNetwork = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 64, 43, 1);
-		MomentumBackpropagation bp = new MomentumBackpropagation();
-		bp.setMomentum(0.8);//*/
-		bp.setMaxError(0.0001);
-		bp.setMaxIterations(1000);//This thing here :(
-		bp.setLearningRate(0.3);
+		NeuralNetwork<BackPropagation> neuralNetwork = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 63, 43, 1);
+		ResilientPropagation bp = new ResilientPropagation();
+		//bp.setMomentum(0.8);//*/
+		bp.setMaxError(0.00000000000001);
+		bp.setMaxIterations(1);//This thing here :(
+		bp.setLearningRate(0.2);
 		neuralNetwork.setLearningRule(bp);
 		
-		train(neuralNetwork, "test");
+		trainUntilAccurate(neuralNetwork, "test2");
 
 		
 		//Check
@@ -106,12 +108,13 @@ public class Network {
     	normalize(set);
     	
 		LearningThread trainer = new LearningThread();
-		trainer.trainUntilAccurate(neuralNetwork, set, 0.8);
+		trainer.trainUntilAccurate(neuralNetwork, set, 0.99);
 	}
 
 
     private static void normalize(DataSet set) {
-		// TODO Auto-generated method stub
+		Normalizer mmn= new MaxMinNormalizerMV();
+		mmn.normalize(set);
 		
 	}
 
