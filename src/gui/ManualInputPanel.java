@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import neuralNetwork.ArrfReader;
+import reader.ArrfReader;
 
 public class ManualInputPanel extends JPanel {
 	private final static int INITIAL_X = 10;

@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 
-import neuralNetwork.Network;
+import neuroph.Network;
 
 public class CalculationPanel extends JPanel {
 	Network network;

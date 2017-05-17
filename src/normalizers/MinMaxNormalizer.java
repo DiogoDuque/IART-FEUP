@@ -5,8 +5,8 @@ import org.neuroph.core.data.DataSetRow;
 
 import java.util.Arrays;
 
-import static neuralNetwork.ArrfReader.NULLVAL;
-import static neuralNetwork.Network.createDataSet;
+import static reader.ArrfReader.NULLVAL;
+import static neuroph.Network.createDataSet;
 
 public class MinMaxNormalizer implements normalizers.Normalizer {
 

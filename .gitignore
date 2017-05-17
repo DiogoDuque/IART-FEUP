@@ -17,3 +17,7 @@ hs_err_pid*
 IART-FEUP.iml
 .classpath
 .project
+/.gradle/
+/build/
+/IART-FEUP.ipr
+/IART-FEUP.iws

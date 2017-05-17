@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import neuralNetwork.Network;
+import neuroph.Network;
 
 import java.awt.Color;
 

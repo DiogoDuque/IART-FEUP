@@ -5,9 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import neuralNetwork.ArrfReader;
-
-import static neuralNetwork.ArrfReader.NULLVAL;
+import static reader.ArrfReader.NULLVAL;
 
 public class AutomaticInputPanel extends JPanel {
 	private JTextField textField;

@@ -1,0 +1,33 @@
+apply plugin: 'java'
+//apply plugin: 'application'
+
+targetCompatibility = 1.7
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.encog:encog-core:3.3.0'
+    compile fileTree(dir: 'libs/reader-2.93b', include: ['*.jar'])
+    compile fileTree(dir: 'libs/reader-2.93b/libs', include: ['*.jar'])
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable
+    compile group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.8.0'
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
+}
+
+//mainClassName = 'encog.HelloWorld'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
