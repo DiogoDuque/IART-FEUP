@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -65,8 +66,14 @@ public class CalculationPanel extends JPanel {
 		    		   resultLabel.setText("Error");
 		    		   return;
 		    	   }
-		    	   
-		    	   double result = Network.ask(network.getNetwork(), data);
+
+                   System.out.println("Input raw array: ");
+                   System.out.println(Arrays.toString(data));
+		    	   double[] normalizedData = Network.normalizer.normalizeInputArray(data);
+                   System.out.println("Input normalized array: ");
+                   System.out.println(Arrays.toString(normalizedData));
+
+                   double result = Network.ask(network.getNetwork(), normalizedData);
 		    	   
 		    	   resultLabel.setText("The neural network says: " + result);
 		       }

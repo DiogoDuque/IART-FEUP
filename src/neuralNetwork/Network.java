@@ -1,8 +1,7 @@
 package neuralNetwork;
 import normalizers.MinMaxNormalizer;
-import org.neuroph.core.Connection;
+import normalizers.Normalizer;
 import org.neuroph.core.NeuralNetwork;
-import org.neuroph.core.Neuron;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.MultiLayerPerceptron;
@@ -10,19 +9,14 @@ import org.neuroph.nnet.learning.BackPropagation;
 import org.neuroph.nnet.learning.MomentumBackpropagation;
 import org.neuroph.util.TransferFunctionType;
 
-import weka.filters.unsupervised.attribute.Normalize;
+import java.util.ArrayList;
+import java.util.Scanner;
 
-import javax.xml.crypto.Data;
-import java.util.*;
-
-/**
- * Created by Diogo on 22-03-2017.
- */
 public class Network {
 	NeuralNetwork<BackPropagation> network;
 	MomentumBackpropagation rule;
 	boolean ready = false;
-	
+	public static Normalizer normalizer;
 	
 	
 	public Network() {
@@ -98,13 +92,7 @@ public class Network {
 	public static double train(NeuralNetwork<BackPropagation> neuralNetwork, String filename) {
     	DataSet set = createDataSet(filename, neuralNetwork.getInputsCount(), neuralNetwork.getOutputsCount());
 
-        System.out.println("Original Set:");
-        System.out.println(set);
-
         normalize(set);
-
-        System.out.println("NormalizedSet: ");
-        System.out.println(set);
 
         LearningThread trainer = new LearningThread();
 		return trainer.train(neuralNetwork, set);
@@ -121,8 +109,8 @@ public class Network {
 
     private static void normalize(DataSet set) {
 
-        MinMaxNormalizer minMaxNormalizer = new MinMaxNormalizer(set, -1, 1);
-        minMaxNormalizer.normalizeDataSet();
+        normalizer = new MinMaxNormalizer(set, -1, 1);
+        normalizer.normalizeDataSet();
 		
 	}
 

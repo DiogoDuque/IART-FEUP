@@ -20,10 +20,10 @@ public class MinMaxNormalizer implements normalizers.Normalizer {
         this.rangeMin = rangeMin;
         this.rangeMax = rangeMax;
 
-        getDataSetAttributesRangeValues();
+        setDataSetAttributesRangeValues();
     }
 
-    private void getDataSetAttributesRangeValues(){
+    private void setDataSetAttributesRangeValues(){
 
         this.minimumValues = new double[dataSet.getInputSize()];
         this.maximumValues = new double[dataSet.getInputSize()];
@@ -47,7 +47,7 @@ public class MinMaxNormalizer implements normalizers.Normalizer {
         }
     }
 
-    public double normalizeValue(double min, double max, double value)
+    private double normalize(double min, double max, double value)
     {
         return ((this.rangeMax - this.rangeMin) * ((value - min) / (max - min)) + this.rangeMin);
     }
@@ -101,9 +101,48 @@ public class MinMaxNormalizer implements normalizers.Normalizer {
             for(int j = 0; j < input.length; j++)
             {
                 if(input[j] != NULLVAL)
-                    input[j] = normalizeValue(this.minimumValues[j], this.maximumValues[j], input[j]);
+                    input[j] = normalize(this.minimumValues[j], this.maximumValues[j], input[j]);
             }
         }
 
+    }
+
+    @Override
+    public double[] normalizeInputArray(double[] array) {
+
+        if(array.length != this.getMaximumValues().length) {
+            System.err.println("InputData array and MaximumValues have different lengths.");
+            return null;
+        }
+
+        double[] ret = new double[array.length];
+
+        for(int i = 0; i < array.length; i++)
+        {
+            ret[i] = normalize(this.minimumValues[i], this.maximumValues[i], array[i]);
+        }
+
+        return ret;
+
+    }
+
+    public DataSet getDataSet() {
+        return dataSet;
+    }
+
+    public double getRangeMin() {
+        return rangeMin;
+    }
+
+    public double getRangeMax() {
+        return rangeMax;
+    }
+
+    public double[] getMinimumValues() {
+        return minimumValues;
+    }
+
+    public double[] getMaximumValues() {
+        return maximumValues;
     }
 }
