@@ -1,4 +1,5 @@
 package neuralNetwork;
+import normalizers.MinMaxNormalizer;
 import org.neuroph.core.Connection;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.Neuron;
@@ -96,29 +97,37 @@ public class Network {
 
 	public static double train(NeuralNetwork<BackPropagation> neuralNetwork, String filename) {
     	DataSet set = createDataSet(filename, neuralNetwork.getInputsCount(), neuralNetwork.getOutputsCount());
-    	DataSet normalizedSet = normalize(set);
-    	
-		LearningThread trainer = new LearningThread();
-		return trainer.train(neuralNetwork, normalizedSet);
+
+        System.out.println("Original Set:");
+        System.out.println(set);
+
+        normalize(set);
+
+        System.out.println("NormalizedSet: ");
+        System.out.println(set);
+
+        LearningThread trainer = new LearningThread();
+		return trainer.train(neuralNetwork, set);
 	}
 	
 	public static void trainUntilAccurate(NeuralNetwork<BackPropagation> neuralNetwork, String filename) {
     	DataSet set = createDataSet(filename, neuralNetwork.getInputsCount(), neuralNetwork.getOutputsCount());
-		DataSet normalizedSet = normalize(set);
+		normalize(set);
     	
 		LearningThread trainer = new LearningThread();
-		trainer.trainUntilAccurate(neuralNetwork, normalizedSet, 0.8);
+		trainer.trainUntilAccurate(neuralNetwork, set, 0.8);
 	}
 
 
-    private static DataSet normalize(DataSet set) {
+    private static void normalize(DataSet set) {
 
-		return Normalizer.minMaxNormalization(set, -1, 1);
+        MinMaxNormalizer minMaxNormalizer = new MinMaxNormalizer(set, -1, 1);
+        minMaxNormalizer.normalizeDataSet();
 		
 	}
 
 
-	static DataSet createDataSet(String filename, int inputs_number, int outputs_number) {
+	public static DataSet createDataSet(String filename, int inputs_number, int outputs_number) {
     	ArrfReader reader = new ArrfReader("./dataset/"+ filename + ".arff");
     	ArrayList<ArrayList<Double>> setData = reader.getFullDataSet();
     	DataSet set = new DataSet(inputs_number, outputs_number);
