@@ -36,6 +36,8 @@ public class BasicNN {
 		ArrfReader reader = new ArrfReader("./dataset/"+ "test" + ".arff");
 		ArrayList<ArrayList<Double>> data = reader.getFullDataSet();
 
+
+
 		double input[][] = new double[data.size()][data.get(0).size() - 1];
 		double output[][] = new double[data.size()][1];
 
