@@ -1,5 +1,9 @@
 package encog;
 
+import normalizers.MinMaxNormalizer;
+import normalizers.Normalizer;
+import org.encog.engine.network.activation.ActivationTANH;
+import org.neuroph.util.data.norm.MaxMinNormalizer;
 import reader.ArrfReader;
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationSigmoid;
@@ -33,10 +37,8 @@ public class BasicNN {
 	 */
 	public static void main(final String args[]) {
 
-		ArrfReader reader = new ArrfReader("./dataset/"+ "test" + ".arff");
+		ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff");
 		ArrayList<ArrayList<Double>> data = reader.getFullDataSet();
-
-
 
 		double input[][] = new double[data.size()][data.get(0).size() - 1];
 		double output[][] = new double[data.size()][1];
@@ -62,13 +64,17 @@ public class BasicNN {
 		// create a neural network, without using a factory
 		BasicNetwork network = new BasicNetwork();
 		network.addLayer(new BasicLayer(null,true,64));
-		network.addLayer(new BasicLayer(new ActivationSigmoid(),true,40));
-		network.addLayer(new BasicLayer(new ActivationSigmoid(),false,1));
+		network.addLayer(new BasicLayer(new ActivationTANH(),true,43));
+		network.addLayer(new BasicLayer(new ActivationTANH(),false,1));
 		network.getStructure().finalizeStructure();
 		network.reset();
  
 		// create training data
 		MLDataSet trainingSet = new BasicMLDataSet(input, output);
+
+		// Normalization
+		Normalizer normalizer = new MinMaxNormalizer(0, 1);
+		normalizer.normalizeDataSet(trainingSet);
  
 		// train the neural network
 		final ResilientPropagation train = new ResilientPropagation(network, trainingSet);
@@ -79,17 +85,23 @@ public class BasicNN {
 			train.iteration();
 			System.out.println("Epoch #" + epoch + " Error:" + train.getError());
 			epoch++;
-		} while(train.getError() > 0.15);
+		} while(train.getError() > 0.10);
 		train.finishTraining();
  
 		// test the neural network
+		int rightCounter = 0;
+
 		System.out.println("Neural Network Results:");
 		for(MLDataPair pair: trainingSet ) {
 			final MLData outputData = network.compute(pair.getInput());
-			System.out.println(pair.getInput().getData(0) + "," + pair.getInput().getData(1)
-					+ ", actual=" + outputData.getData(0) + ",ideal=" + pair.getIdeal().getData(0));
+			System.out.println(pair.getInput() + ", actual=" + outputData.getData(0) + ",ideal=" + pair.getIdeal().getData(0));
+
+			if(outputData.getData(0) - pair.getIdeal().getData(0) < 0.5)
+				rightCounter++;
 		}
- 
+
+		System.out.println("Got " + rightCounter + " of " + trainingSet.size());
+
 		Encog.getInstance().shutdown();
 	}
 }

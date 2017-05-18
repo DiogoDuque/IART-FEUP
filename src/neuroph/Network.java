@@ -110,8 +110,8 @@ public class Network {
 
     private static void normalize(DataSet set) {
 
-        normalizer = new MinMaxNormalizer(set, -1, 1);
-        normalizer.normalizeDataSet();
+        normalizer = new MinMaxNormalizer(-1, 1);
+        normalizer.normalizeDataSet(set);
 		
 	}
 

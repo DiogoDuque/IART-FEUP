@@ -1,5 +1,7 @@
 package normalizers;
 
+import org.encog.ml.data.MLDataPair;
+import org.encog.ml.data.MLDataSet;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 
@@ -10,20 +12,16 @@ import static neuroph.Network.createDataSet;
 
 public class MinMaxNormalizer implements normalizers.Normalizer {
 
-    private DataSet dataSet;
     private double rangeMin, rangeMax;
     private double[] minimumValues, maximumValues;
 
-    public MinMaxNormalizer(DataSet dataSet, double rangeMin, double rangeMax)
+    public MinMaxNormalizer(double rangeMin, double rangeMax)
     {
-        this.dataSet = dataSet;
         this.rangeMin = rangeMin;
         this.rangeMax = rangeMax;
-
-        setDataSetAttributesRangeValues();
     }
 
-    private void setDataSetAttributesRangeValues(){
+    private void setDataSetAttributesRangeValues(DataSet dataSet){
 
         this.minimumValues = new double[dataSet.getInputSize()];
         this.maximumValues = new double[dataSet.getInputSize()];
@@ -31,10 +29,34 @@ public class MinMaxNormalizer implements normalizers.Normalizer {
         Arrays.fill(minimumValues, Double.MAX_VALUE);
         Arrays.fill(maximumValues, Double.MIN_VALUE);
 
-        for(int i = 0; i < this.dataSet.size(); i++)
+        for(int i = 0; i < dataSet.size(); i++)
         {
-            DataSetRow currentRow = this.dataSet.getRowAt(i);
+            DataSetRow currentRow = dataSet.getRowAt(i);
             double[] input = currentRow.getInput();
+
+            for(int j = 0; j < input.length; j++)
+            {
+                if(input[j] < minimumValues[j] && input[j] != NULLVAL)
+                    minimumValues[j] = input[j];
+
+                if(input[j] > maximumValues[j] && input[j] != NULLVAL)
+                    maximumValues[j] = input[j];
+            }
+        }
+    }
+
+    private void setDataSetAttributesRangeValues(MLDataSet dataSet){
+
+        this.minimumValues = new double[dataSet.getInputSize()];
+        this.maximumValues = new double[dataSet.getInputSize()];
+
+        Arrays.fill(minimumValues, Double.MAX_VALUE);
+        Arrays.fill(maximumValues, Double.MIN_VALUE);
+
+        for(int i = 0; i < dataSet.size(); i++)
+        {
+            MLDataPair currentPair = dataSet.get(i);
+            double[] input = currentPair.getInputArray();
 
             for(int j = 0; j < input.length; j++)
             {
@@ -83,29 +105,60 @@ public class MinMaxNormalizer implements normalizers.Normalizer {
 
         DataSet set = createDataSet("test", 64, 1);
 
-        MinMaxNormalizer minMaxNormalizer = new MinMaxNormalizer(set, -1, 1);
-        minMaxNormalizer.normalizeDataSet();
+        MinMaxNormalizer minMaxNormalizer = new MinMaxNormalizer(-1, 1);
+        minMaxNormalizer.normalizeDataSet(set);
 
         //System.out.println(Arrays.toString(set.getRowAt(1).getInput()));
         System.out.println(set);
     }
 
     @Override
-    public void normalizeDataSet() {
+    public void normalizeDataSet(DataSet dataSet) {
 
-        for(int i = 0; i < this.dataSet.size(); i++)
+        setDataSetAttributesRangeValues(dataSet);
+
+        for(int i = 0; i < dataSet.size(); i++)
         {
-            DataSetRow currentRow = this.dataSet.getRowAt(i);
+            DataSetRow currentRow = dataSet.getRowAt(i);
             double[] input = currentRow.getInput();
 
             for(int j = 0; j < input.length; j++)
             {
                 if(input[j] != NULLVAL)
                     input[j] = normalize(this.minimumValues[j], this.maximumValues[j], input[j]);
+
+                currentRow = new DataSetRow(input, currentRow.getDesiredOutput());
+                dataSet.set(i, currentRow);
             }
         }
 
     }
+
+    @Override
+    public void normalizeDataSet(MLDataSet dataSet) {
+
+        setDataSetAttributesRangeValues(dataSet);
+
+        for(int i = 0; i < dataSet.size(); i++)
+        {
+            MLDataPair currentPair = dataSet.get(i);
+            double[] input = currentPair.getInputArray();
+
+            for(int j = 0; j < input.length; j++)
+            {
+                if(input[j] != NULLVAL)
+                    input[j] = normalize(this.minimumValues[j], this.maximumValues[j], input[j]);
+                else
+                {
+                    input[j] = this.minimumValues[j] + this.maximumValues[j] / 2;
+                }
+
+                currentPair.setInputArray(input);
+            }
+        }
+
+    }
+
 
     @Override
     public double[] normalizeInputArray(double[] array) {
@@ -124,10 +177,6 @@ public class MinMaxNormalizer implements normalizers.Normalizer {
 
         return ret;
 
-    }
-
-    public DataSet getDataSet() {
-        return dataSet;
     }
 
     public double getRangeMin() {
