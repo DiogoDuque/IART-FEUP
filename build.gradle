@@ -10,8 +10,8 @@ repositories {
 
 dependencies {
     compile 'org.encog:encog-core:3.3.0'
-    compile fileTree(dir: 'libs/reader-2.93b', include: ['*.jar'])
-    compile fileTree(dir: 'libs/reader-2.93b/libs', include: ['*.jar'])
+    compile fileTree(dir: 'libs/neuroph-2.93b', include: ['*.jar'])
+    compile fileTree(dir: 'libs/neuroph-2.93b/libs', include: ['*.jar'])
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable
