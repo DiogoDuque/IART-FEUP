@@ -25,6 +25,8 @@ public class LearningProcess {
         // begin counting time
         elapsedTime = System.nanoTime();
 
+        FlatNetwork flatNetwork = propagation.getCurrentFlatNetwork();
+
         epoch = 1;
 
         do {

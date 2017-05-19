@@ -111,4 +111,43 @@ public class ArrfReader {
     public ArrayList<ArrayList<Double>> getFullDataSet() {
         return fullDataSet;
     }
+
+    /**
+     *
+     * @return An ArrayList with the input 2D array one position 0 and the output 2D array on position 1.
+     */
+    public ArrayList<double[][]> getInputAndOutput(){
+
+        int numInputNeurons = this.fullDataSet.get(0).size() - 1;
+        int numOutputNeurons = 1;
+        int totalNumOfNeurons = numInputNeurons + numOutputNeurons;
+        int numberOfEntries = this.fullDataSet.size();
+
+        double input[][] = new double[numberOfEntries][numInputNeurons];
+        double output[][] = new double[numberOfEntries][numOutputNeurons];
+
+        for(int i = 0; i < numberOfEntries; i++){
+
+            ArrayList<Double> currentCompany = this.fullDataSet.get(i);
+
+            for(int j = 0; j < totalNumOfNeurons; j++)
+            {
+                if(j == numInputNeurons)
+                {
+                    output[i][0] = currentCompany.get(j);
+                }
+                else
+                {
+                    input[i][j] = currentCompany.get(j);
+                }
+            }
+
+        }
+
+        ArrayList<double[][]> ret = new ArrayList<>();
+        ret.add(input);
+        ret.add(output);
+
+        return ret;
+    }
 }

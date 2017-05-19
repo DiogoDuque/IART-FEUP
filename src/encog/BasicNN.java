@@ -51,34 +51,15 @@ public class BasicNN {
 	    boolean normalizeDataSet = true;
 
 		ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff");
-		ArrayList<ArrayList<Double>> data = reader.getFullDataSet();
+		ArrayList<double[][]> inputAndOutput = reader.getInputAndOutput();
 
-		int numInputNeurons = data.get(0).size() - 1;
-        int numOutputNeurons = 1;
-        int totalNumOfNeurons = numInputNeurons + numOutputNeurons;
+		double input[][] = inputAndOutput.get(0);
+		double output[][] = inputAndOutput.get(1);
 
-        System.out.println(numInputNeurons + " input neurons and " + numOutputNeurons + " output neurons.");
+		int numInputNeurons = input[0].length;
+		int numOutputNeurons = output[0].length;
 
-		double input[][] = new double[data.size()][numInputNeurons];
-		double output[][] = new double[data.size()][numOutputNeurons];
-
-		for(int i = 0; i < data.size(); i++){
-
-			ArrayList<Double> currentCompany = data.get(i);
-
-			for(int j = 0; j < totalNumOfNeurons; j++)
-			{
-				if(j == numInputNeurons)
-				{
-					output[i][0] = currentCompany.get(j);
-				}
-				else
-				{
-					input[i][j] = currentCompany.get(j);
-				}
-			}
-
-		}
+		System.out.println(numInputNeurons + " input neurons and " + numOutputNeurons + " output neurons.");
 
         // create training data
         MLDataSet trainingSet = new BasicMLDataSet(input, output);
