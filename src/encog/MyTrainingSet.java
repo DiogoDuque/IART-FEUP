@@ -9,10 +9,7 @@ import org.encog.ml.data.basic.BasicMLDataSet;
 import reader.ArrfReader;
 import utils.NN;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MyTrainingSet {
 
@@ -85,7 +82,6 @@ public class MyTrainingSet {
 
         MyTrainingSet myTrainingSet = new MyTrainingSet(inputAndOutput.get(0), inputAndOutput.get(1));
         System.out.println(myTrainingSet);
-
 
     }
 }
