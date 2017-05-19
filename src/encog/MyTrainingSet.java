@@ -1,5 +1,6 @@
 package encog;
 
+import normalizers.Normalizer;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
@@ -57,6 +58,14 @@ public class MyTrainingSet {
 
     }
 
+    public void normalize(Normalizer normalizer){
+
+        for(Map.Entry<String, MLDataSet> entry : this.trainingSets.entrySet()){
+            normalizer.normalizeDataSet(entry.getValue());
+        }
+
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -72,6 +81,18 @@ public class MyTrainingSet {
         }
 
         return sb.toString();
+    }
+
+    public double[][] getInput() {
+        return input;
+    }
+
+    public double[][] getOutput() {
+        return output;
+    }
+
+    public Map<String, MLDataSet> getTrainingSets() {
+        return trainingSets;
     }
 
     // FOR TESTING

@@ -7,7 +7,11 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.training.propagation.Propagation;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 import org.encog.neural.prune.PruneSelective;
+import utils.Converter;
 import utils.NN;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class LearningProcess {
 
@@ -16,16 +20,22 @@ public class LearningProcess {
 
     /**
      * Trains a certain propagation object according to a maximum error parameter.
-     * @param network     The Basic Network to be trained.
      * @param propagation The propagation object.
      * @param maxError The maximum propagation error.
      */
-    public static void train(BasicNetwork network, Propagation propagation, double maxError){
+    public static void iterateWithRule(Propagation propagation, double maxError){
 
         // begin counting time
         elapsedTime = System.nanoTime();
 
-        FlatNetwork flatNetwork = propagation.getCurrentFlatNetwork();
+        StringBuilder sb = new StringBuilder();
+
+        for(MLDataPair pair : propagation.getTraining())
+        {
+            sb.append("\tPair: ").append(pair).append("\n");
+        }
+
+        System.out.println(sb.toString());
 
         epoch = 1;
 
@@ -43,6 +53,26 @@ public class LearningProcess {
 
     }
 
+    public static void train(MyNetwork myNetwork, MyTrainingSet trainingSet, double maxError) throws Exception {
+
+        for(Map.Entry<String, MLDataSet> entry: trainingSet.getTrainingSets().entrySet()){
+
+            MLDataSet currentSet = entry.getValue();
+            System.out.println(currentSet.size());
+
+            Propagation propagation = new ResilientPropagation(myNetwork.getNetwork(), currentSet);
+            propagation.setThreadCount(4);
+
+            ArrayList<Integer> missingValues = Converter.readArrayFromString(entry.getKey());
+            myNetwork.adaptToMissingValues(missingValues);
+
+            iterateWithRule(propagation, maxError);
+        }
+
+    }
+
+
+
     /**
      *
      * @return Time elapsed during training in nanoseconds.
@@ -59,7 +89,7 @@ public class LearningProcess {
         return epoch;
     }
 
-    private void prune(BasicNetwork network, Propagation propagation){
+    private static void prune(BasicNetwork network, Propagation propagation){
 
         PruneSelective pruneSelective = new PruneSelective(network);
         MLDataSet trainingSet = propagation.getTraining();

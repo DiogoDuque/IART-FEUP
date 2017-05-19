@@ -8,6 +8,9 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.pattern.FeedForwardPattern;
 import org.encog.neural.prune.PruneIncremental;
+import org.encog.neural.prune.PruneSelective;
+
+import java.util.ArrayList;
 
 
 public class MyNetwork {
@@ -73,6 +76,29 @@ public class MyNetwork {
 
         pruneIncremental.process();
         return pruneIncremental.getHidden1Size();
+    }
+
+    public void adaptToMissingValues(ArrayList<Integer> missingValues) throws Exception {
+
+        System.out.println(missingValues);
+
+        if(missingValues.size() != this.inputSize)
+        {
+            throw new Exception("Could not adapt network to missing values. Missing values size is not consistent with input size.");
+        }
+
+        PruneSelective pruneSelective = new PruneSelective(this.network);
+
+        for(int i = 0; i < missingValues.size(); i++)
+        {
+            if(missingValues.get(i) == 1)   // missing value
+            {
+                this.network.validateNeuron(0, 1);
+                System.out.println("Pruned neuron " + i);
+                System.out.println(this.network.getLayerNeuronCount(0));
+            }
+        }
+
     }
 
     public BasicNetwork getNetwork() {
