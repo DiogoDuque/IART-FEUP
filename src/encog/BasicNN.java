@@ -2,7 +2,14 @@ package encog;
 
 import normalizers.MinMaxNormalizer;
 import normalizers.Normalizer;
+import org.encog.ConsoleStatusReportable;
 import org.encog.engine.network.activation.ActivationTANH;
+import org.encog.neural.networks.layers.Layer;
+import org.encog.neural.pattern.FeedForwardPattern;
+import org.encog.neural.prune.PruneIncremental;
+import org.encog.neural.prune.PruneSelective;
+import org.encog.persist.EncogDirectoryPersistence;
+import org.encog.util.simple.EncogUtility;
 import org.neuroph.util.data.norm.MaxMinNormalizer;
 import reader.ArrfReader;
 import org.encog.Encog;
@@ -15,6 +22,7 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -31,25 +39,35 @@ import java.util.ArrayList;
  */
 public class BasicNN {
 
+	public static final String NETWORK_FOLDER = "neural_networks/";
+
 	/**
 	 * The main method.
 	 * @param args No arguments are used.
 	 */
 	public static void main(final String args[]) {
 
+	    boolean normalizeDataSet = true;
+
 		ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff");
 		ArrayList<ArrayList<Double>> data = reader.getFullDataSet();
 
-		double input[][] = new double[data.size()][data.get(0).size() - 1];
-		double output[][] = new double[data.size()][1];
+		int numInputNeurons = data.get(0).size() - 1;
+        int numOutputNeurons = 1;
+        int totalNumOfNeurons = numInputNeurons + numOutputNeurons;
+
+        System.out.println(numInputNeurons + " input neurons and " + numOutputNeurons + " output neurons.");
+
+		double input[][] = new double[data.size()][numInputNeurons];
+		double output[][] = new double[data.size()][numOutputNeurons];
 
 		for(int i = 0; i < data.size(); i++){
 
 			ArrayList<Double> currentCompany = data.get(i);
 
-			for(int j = 0; j < data.get(0).size(); j++)
+			for(int j = 0; j < totalNumOfNeurons; j++)
 			{
-				if(j == data.get(0).size()-1)
+				if(j == numInputNeurons)
 				{
 					output[i][0] = currentCompany.get(j);
 				}
@@ -60,32 +78,56 @@ public class BasicNN {
 			}
 
 		}
- 
-		// create a neural network, without using a factory
-		BasicNetwork network = new BasicNetwork();
-		network.addLayer(new BasicLayer(null,true,64));
-		network.addLayer(new BasicLayer(new ActivationTANH(),true,43));
-		network.addLayer(new BasicLayer(new ActivationTANH(),false,1));
-		network.getStructure().finalizeStructure();
-		network.reset();
- 
-		// create training data
-		MLDataSet trainingSet = new BasicMLDataSet(input, output);
 
-		// Normalization
-		Normalizer normalizer = new MinMaxNormalizer(0, 1);
-		normalizer.normalizeDataSet(trainingSet);
+        // create training data
+        MLDataSet trainingSet = new BasicMLDataSet(input, output);
+
+        // Normalization
+        if(normalizeDataSet) {
+            Normalizer normalizer = new MinMaxNormalizer(0, 1);
+            normalizer.normalizeDataSet(trainingSet);
+        }
+
+
+        String networkName = "n1";
  
+		MyNetwork network;
+
+		File networkFile = new File(NETWORK_FOLDER + networkName + ".eg");
+		if(!networkFile.exists())
+		{
+		    // create new network
+            network = new MyNetwork(networkName, numInputNeurons, numOutputNeurons, new ActivationSigmoid());
+
+            // adapt to training set
+            try {
+                network.adapt(trainingSet);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Could not adapt training set to network.");
+                return;
+            }
+        }
+		else{
+            network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
+        }
+
+
+
 		// train the neural network
-		final ResilientPropagation train = new ResilientPropagation(network, trainingSet);
- 
+		final ResilientPropagation train = new ResilientPropagation(network.getNetwork(), trainingSet);
+		train.setThreadCount(4);
+
+
 		int epoch = 1;
  
 		do {
 			train.iteration();
+
 			System.out.println("Epoch #" + epoch + " Error:" + train.getError());
 			epoch++;
-		} while(train.getError() > 0.10);
+		} while(train.getError() > 0.15);
+
 		train.finishTraining();
  
 		// test the neural network
@@ -93,15 +135,31 @@ public class BasicNN {
 
 		System.out.println("Neural Network Results:");
 		for(MLDataPair pair: trainingSet ) {
-			final MLData outputData = network.compute(pair.getInput());
-			System.out.println(pair.getInput() + ", actual=" + outputData.getData(0) + ",ideal=" + pair.getIdeal().getData(0));
+			final MLData outputData = network.getNetwork().compute(pair.getInput());
+			//System.out.println(pair.getInput() + ", actual=" + outputData.getData(0) + ",ideal=" + pair.getIdeal().getData(0));
 
 			if(outputData.getData(0) - pair.getIdeal().getData(0) < 0.5)
 				rightCounter++;
 		}
 
+		postNetworkLayersInfo(network.getNetwork(), networkName);
 		System.out.println("Got " + rightCounter + " of " + trainingSet.size());
+        System.out.println("This NN error rate is: " + train.getError());
+
+		EncogDirectoryPersistence.saveObject(networkFile, network.getNetwork());
 
 		Encog.getInstance().shutdown();
 	}
+
+
+
+    public static void postNetworkLayersInfo(BasicNetwork network, String networkName)
+    {
+        System.out.println("Name: " + networkName);
+        System.out.println("Layers: ");
+        for(Layer l : network.getStructure().getLayers())
+        {
+            System.out.println("\t" + l.getNeuronCount() + " neurons");
+        }
+    }
 }
