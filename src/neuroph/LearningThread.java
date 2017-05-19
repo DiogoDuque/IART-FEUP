@@ -15,6 +15,7 @@ import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
 import org.neuroph.nnet.learning.BackPropagation;
 import reader.ArrfReader;
+import utils.NN;
 
 public class LearningThread{
 	private NeuralNetwork<BackPropagation> neuralNetwork;
@@ -101,7 +102,7 @@ public class LearningThread{
 			if(row.getDesiredOutput()[0] ==  ArrfReader.NULLVAL)
 				continue;
 
-			byte[] missingValues = getMissingValues(row.getInput());
+			byte[] missingValues = NN.getMissingValues(row.getInput());
 			String mvCode = Arrays.toString(missingValues);
 
 			if(!trainingSets.containsKey(mvCode))
@@ -114,7 +115,7 @@ public class LearningThread{
 			if(row.getDesiredOutput()[0] ==  ArrfReader.NULLVAL)
 				continue;
 
-			byte[] missingValues = getMissingValues(row.getInput());
+			byte[] missingValues = NN.getMissingValues(row.getInput());
 			String mvCode = Arrays.toString(missingValues);
 
 			if(!testingSets.containsKey(mvCode))
@@ -183,17 +184,6 @@ public class LearningThread{
 		System.out.println("-----------------------------------------------");
 
 	}
-
-
-	private byte[] getMissingValues(double[] input) {
-		byte[] res = new byte[input.length];
-		for(int i = 0; i < input.length; i++)
-			if(input[i] == ArrfReader.NULLVAL)
-				res[i] = 1;
-		return res;
-	}
-
-
 
 	private static void adaptToNN(NeuralNetwork<BackPropagation> neuralNetwork, LinkedHashMap<Integer, List<Connection>> backupConnections) {
 		ArrayList<Neuron> neurons = new ArrayList<Neuron>(neuralNetwork.getInputNeurons());

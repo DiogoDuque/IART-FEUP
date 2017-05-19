@@ -21,6 +21,7 @@ import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+import utils.UnitConverter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -112,25 +113,14 @@ public class BasicNN {
             network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
         }
 
-
-
 		// train the neural network
-		final ResilientPropagation train = new ResilientPropagation(network.getNetwork(), trainingSet);
-		train.setThreadCount(4);
+		final ResilientPropagation propagation = new ResilientPropagation(network.getNetwork(), trainingSet);
+		propagation.setThreadCount(4);
 
+        LearningProcess.train(network.getNetwork(), propagation, 0.15);
+        System.out.println("Time elapsed during training: " + UnitConverter.nanosecondsToSeconds(LearningProcess.getElapsedTime()) + " seconds.");
 
-		int epoch = 1;
- 
-		do {
-			train.iteration();
-
-			System.out.println("Epoch #" + epoch + " Error:" + train.getError());
-			epoch++;
-		} while(train.getError() > 0.15);
-
-		train.finishTraining();
- 
-		// test the neural network
+        // test the neural network
 		int rightCounter = 0;
 
 		System.out.println("Neural Network Results:");
@@ -144,7 +134,7 @@ public class BasicNN {
 
 		postNetworkLayersInfo(network.getNetwork(), networkName);
 		System.out.println("Got " + rightCounter + " of " + trainingSet.size());
-        System.out.println("This NN error rate is: " + train.getError());
+        System.out.println("This NN error rate is: " + propagation.getError());
 
 		EncogDirectoryPersistence.saveObject(networkFile, network.getNetwork());
 
@@ -157,9 +147,9 @@ public class BasicNN {
     {
         System.out.println("Name: " + networkName);
         System.out.println("Layers: ");
-        for(Layer l : network.getStructure().getLayers())
+        for(int i = 0; i < network.getLayerCount(); i++)
         {
-            System.out.println("\t" + l.getNeuronCount() + " neurons");
+            System.out.println("\tLayer " + (i+1) + ": " + network.getLayerNeuronCount(i) + " neurons");
         }
     }
 }
