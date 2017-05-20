@@ -36,6 +36,7 @@ public class ArrfReader {
         this.fullDataSet = new ArrayList<>();
 
         this.readFile();
+        this.replaceMissingValuesWithMean();
         this.readDataSet();
     }
 
@@ -115,28 +116,6 @@ public class ArrfReader {
         return fullDataSet;
     }
 
-    public double[] getColumnValues(int column) {
-
-        try {
-            ReplaceMissingValues replaceMissingValues = new ReplaceMissingValues();
-            replaceMissingValues.setInputFormat(this.dataInstances);
-            this.dataInstances = Filter.useFilter(this.dataInstances, replaceMissingValues);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return this.dataInstances.attributeToDoubleArray(column);
-
-    }
-
-    // FOR TESTING
-    public static void main(String[] args) {
-
-        ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff");
-        System.out.println(Arrays.toString(reader.getColumnValues(3)));
-
-    }
-
     /**
      *
      * @return An ArrayList with the input 2D array one position 0 and the output 2D array on position 1.
@@ -174,5 +153,24 @@ public class ArrfReader {
         ret.add(output);
 
         return ret;
+    }
+
+    public void replaceMissingValuesWithMean() {
+
+        try {
+            ReplaceMissingValues replaceMissingValues = new ReplaceMissingValues();
+            replaceMissingValues.setInputFormat(this.dataInstances);
+            this.dataInstances = Filter.useFilter(this.dataInstances, replaceMissingValues);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    // FOR TESTING
+    public static void main(String[] args) {
+
+        ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff");
+
     }
 }

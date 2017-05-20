@@ -2,6 +2,7 @@ package encog;
 
 import normalizers.MinMaxNormalizer;
 import normalizers.Normalizer;
+import org.encog.neural.networks.training.propagation.Propagation;
 import org.encog.persist.EncogDirectoryPersistence;
 import reader.ArrfReader;
 import org.encog.Encog;
@@ -54,15 +55,12 @@ public class BasicNN {
 		System.out.println(numInputNeurons + " input neurons and " + numOutputNeurons + " output neurons.");
 
 		// create training data
-		MLDataSet adapterSet = new BasicMLDataSet(input, output);
-		MyTrainingSet trainingSet = new MyTrainingSet(input, output);
+		MLDataSet trainingSet = new BasicMLDataSet(input, output);
 
 		// Normalization
 		if(normalizeDataSets) {
 			Normalizer normalizer = new MinMaxNormalizer(0, 1);
-			normalizer.normalizeDataSet(adapterSet);
-
-			trainingSet.normalize(normalizer);
+			normalizer.normalizeDataSet(trainingSet);
 		}
 
 		MyNetwork network;
@@ -75,30 +73,29 @@ public class BasicNN {
 
             // adapt to set
             try {
-                network.adapt(adapterSet);
+                network.adapt(trainingSet);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Could not adapt training set to network.");
                 return;
             }
+
+			Propagation propagation = new ResilientPropagation(network.getNetwork(), trainingSet);
+			propagation.setThreadCount(4);
+
+			LearningProcess.iterateWithRule(propagation, 0.15);
         }
 		else{
             network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
         }
 
-		try {
-			LearningProcess.train(network, trainingSet, 0.3);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
 		System.out.println("Time elapsed during training: " + Converter.nanosecondsToSeconds(LearningProcess.getElapsedTime()) + " seconds.");
 
         // test the neural network
 		int rightCounter = 0;
 
 		System.out.println("Neural Network Results:");
-		for(MLDataPair pair: adapterSet ) {
+		for(MLDataPair pair: trainingSet ) {
 			final MLData outputData = network.getNetwork().compute(pair.getInput());
 			//System.out.println(pair.getInput() + ", actual=" + outputData.getData(0) + ",ideal=" + pair.getIdeal().getData(0));
 
@@ -107,7 +104,7 @@ public class BasicNN {
 		}
 
 		postNetworkLayersInfo(network.getNetwork(), networkName);
-		System.out.println("Got " + rightCounter + " of " + adapterSet.size());
+		System.out.println("Got " + rightCounter + " of " + trainingSet.size());
 
 		EncogDirectoryPersistence.saveObject(networkFile, network.getNetwork());
 

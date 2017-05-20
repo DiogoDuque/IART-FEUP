@@ -70,7 +70,6 @@ public class LearningProcess {
             propagation.setThreadCount(4);
 
             ArrayList<Integer> missingValues = Converter.readArrayFromString(entry.getKey());
-            myNetwork.adaptToMissingValues(missingValues);
 
             iterateWithRule(propagation, maxError);
         }

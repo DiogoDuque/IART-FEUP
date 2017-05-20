@@ -80,49 +80,6 @@ public class MyNetwork {
         return pruneIncremental.getHidden1Size();
     }
 
-    public void adaptToMissingValues(ArrayList<Integer> missingValues) throws Exception {
-
-        enableAllConnections();
-
-        System.out.println(missingValues);
-
-        if(missingValues.size() != this.inputSize)
-        {
-            throw new Exception("Could not adapt network to missing values. Missing values size is not consistent with input size.");
-        }
-
-        for(int i = 0; i < missingValues.size(); i++)
-        {
-            if(missingValues.get(i) == 1)   // missing value
-            {
-                int numOfHiddenNeurons = this.network.getLayerNeuronCount(1);
-
-                for(int j = 0; j < numOfHiddenNeurons; j++) {
-                    this.network.enableConnection(0, i, j, false);
-                    System.out.println("Disable connections of neuron " + i);
-                }
-            }
-        }
-
-    }
-
-    public void enableAllConnections()
-    {
-        for(int i = 0; i < this.network.getLayerCount(); i++)
-        {
-            for(int j = 0; j < this.network.getLayerNeuronCount(i); j++){
-                if( i < this.network.getLayerCount() - 1)
-                {
-                    for(int k = 0; k < this.network.getLayerNeuronCount(i+1); k++)
-                    {
-                        this.network.enableConnection(i, j, k, true);
-                    }
-
-                }
-            }
-        }
-    }
-
     public BasicNetwork getNetwork() {
         return network;
     }
