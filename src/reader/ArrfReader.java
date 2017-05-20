@@ -1,5 +1,8 @@
 package reader;
+import weka.clusterers.EM;
 import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.ReplaceMissingValues;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -110,6 +113,28 @@ public class ArrfReader {
 
     public ArrayList<ArrayList<Double>> getFullDataSet() {
         return fullDataSet;
+    }
+
+    public double[] getColumnValues(int column) {
+
+        try {
+            ReplaceMissingValues replaceMissingValues = new ReplaceMissingValues();
+            replaceMissingValues.setInputFormat(this.dataInstances);
+            this.dataInstances = Filter.useFilter(this.dataInstances, replaceMissingValues);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return this.dataInstances.attributeToDoubleArray(column);
+
+    }
+
+    // FOR TESTING
+    public static void main(String[] args) {
+
+        ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff");
+        System.out.println(Arrays.toString(reader.getColumnValues(3)));
+
     }
 
     /**
