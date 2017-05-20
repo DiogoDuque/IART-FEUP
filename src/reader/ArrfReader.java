@@ -21,6 +21,7 @@ import java.util.List;
  */
 public class ArrfReader {
     public static final double NULLVAL = Math.PI;
+    public boolean treatMVsWithMean = true;
 
     private String filePath;
     private Instances dataInstances;
@@ -35,8 +36,26 @@ public class ArrfReader {
         this.filePath = filePath;
         this.fullDataSet = new ArrayList<>();
 
+        this.treatMVsWithMean = true;
+
+        this.process();
+    }
+
+    public ArrfReader(String filePath, boolean treatMVsWithMean)
+    {
+        this.filePath = filePath;
+        this.fullDataSet = new ArrayList<>();
+
+        this.treatMVsWithMean = treatMVsWithMean;
+
+        this.process();
+    }
+
+    public void process(){
         this.readFile();
-        this.replaceMissingValuesWithMean();
+        if(treatMVsWithMean)
+            this.replaceMissingValuesWithMean();
+
         this.readDataSet();
     }
 
@@ -165,6 +184,10 @@ public class ArrfReader {
             e.printStackTrace();
         }
 
+    }
+
+    public boolean isTreatMVsWithMean() {
+        return treatMVsWithMean;
     }
 
     // FOR TESTING

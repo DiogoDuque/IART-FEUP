@@ -40,10 +40,33 @@ public class BasicNN {
 	 */
 	public static void main(final String args[]) {
 
-	    boolean normalizeDataSets = true;
-		String networkName = "n3";
+        ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff", true);
+	    boolean normalizeDataSets = false;
+	    double maxError = 0.15;
 
-		ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff");
+	    StringBuilder networkNameBuilder = new StringBuilder();
+
+	    if(normalizeDataSets)
+        {
+            networkNameBuilder.append("normalized_");
+        }
+        else
+        {
+            networkNameBuilder.append("non-normalized_");
+        }
+
+        if(reader.isTreatMVsWithMean()){
+            networkNameBuilder.append("mean");
+        }
+        else
+        {
+            networkNameBuilder.append("default-value");
+        }
+
+        networkNameBuilder.append(maxError);
+
+		String networkName = networkNameBuilder.toString();
+
 		ArrayList<double[][]> inputAndOutput = reader.getInputAndOutput();
 
 		double input[][] = inputAndOutput.get(0);
@@ -83,13 +106,13 @@ public class BasicNN {
 			Propagation propagation = new ResilientPropagation(network.getNetwork(), trainingSet);
 			propagation.setThreadCount(4);
 
-			LearningProcess.iterateWithRule(propagation, 0.15);
+			LearningProcess.iterateWithRule(propagation, maxError);
+            System.out.println("Time elapsed during training: " + Converter.nanosecondsToSeconds(LearningProcess.getElapsedTime()) + " seconds.");
         }
 		else{
             network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
         }
 
-		System.out.println("Time elapsed during training: " + Converter.nanosecondsToSeconds(LearningProcess.getElapsedTime()) + " seconds.");
 
         // test the neural network
 		int rightCounter = 0;
