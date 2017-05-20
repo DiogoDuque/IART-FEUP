@@ -40,7 +40,7 @@ public class BasicNN {
 	public static void main(final String args[]) {
 
 	    boolean normalizeDataSets = true;
-		String networkName = "n2";
+		String networkName = "n3";
 
 		ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff");
 		ArrayList<double[][]> inputAndOutput = reader.getInputAndOutput();
@@ -87,7 +87,7 @@ public class BasicNN {
         }
 
 		try {
-			LearningProcess.train(network, trainingSet, 0.15);
+			LearningProcess.train(network, trainingSet, 0.3);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;

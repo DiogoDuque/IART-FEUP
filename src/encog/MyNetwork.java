@@ -4,6 +4,7 @@ import org.encog.ConsoleStatusReportable;
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.MLDataSet;
+import org.encog.neural.flat.FlatNetwork;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.pattern.FeedForwardPattern;
@@ -11,6 +12,7 @@ import org.encog.neural.prune.PruneIncremental;
 import org.encog.neural.prune.PruneSelective;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class MyNetwork {
@@ -80,6 +82,8 @@ public class MyNetwork {
 
     public void adaptToMissingValues(ArrayList<Integer> missingValues) throws Exception {
 
+        enableAllConnections();
+
         System.out.println(missingValues);
 
         if(missingValues.size() != this.inputSize)
@@ -87,18 +91,36 @@ public class MyNetwork {
             throw new Exception("Could not adapt network to missing values. Missing values size is not consistent with input size.");
         }
 
-        PruneSelective pruneSelective = new PruneSelective(this.network);
-
         for(int i = 0; i < missingValues.size(); i++)
         {
             if(missingValues.get(i) == 1)   // missing value
             {
-                this.network.validateNeuron(0, 1);
-                System.out.println("Pruned neuron " + i);
-                System.out.println(this.network.getLayerNeuronCount(0));
+                int numOfHiddenNeurons = this.network.getLayerNeuronCount(1);
+
+                for(int j = 0; j < numOfHiddenNeurons; j++) {
+                    this.network.enableConnection(0, i, j, false);
+                    System.out.println("Disable connections of neuron " + i);
+                }
             }
         }
 
+    }
+
+    public void enableAllConnections()
+    {
+        for(int i = 0; i < this.network.getLayerCount(); i++)
+        {
+            for(int j = 0; j < this.network.getLayerNeuronCount(i); j++){
+                if( i < this.network.getLayerCount() - 1)
+                {
+                    for(int k = 0; k < this.network.getLayerNeuronCount(i+1); k++)
+                    {
+                        this.network.enableConnection(i, j, k, true);
+                    }
+
+                }
+            }
+        }
     }
 
     public BasicNetwork getNetwork() {

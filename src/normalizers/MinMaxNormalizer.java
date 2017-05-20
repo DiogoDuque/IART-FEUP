@@ -148,10 +148,6 @@ public class MinMaxNormalizer implements normalizers.Normalizer {
             {
                 if(input[j] != NULLVAL)
                     input[j] = normalize(this.minimumValues[j], this.maximumValues[j], input[j]);
-                else
-                {
-                    input[j] = this.minimumValues[j] + this.maximumValues[j] / 2;
-                }
 
                 currentPair.setInputArray(input);
             }

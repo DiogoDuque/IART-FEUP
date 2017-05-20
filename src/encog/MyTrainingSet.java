@@ -46,6 +46,7 @@ public class MyTrainingSet {
             {
                 set = new BasicMLDataSet();
                 set.add(mlDataPair);
+                System.out.println("MYPAIR: " + mlDataPair);
 
                 this.trainingSets.put(missingValues, set);
             }
@@ -53,6 +54,7 @@ public class MyTrainingSet {
             {
                 set = this.trainingSets.get(missingValues);
                 set.add(mlDataPair);
+                System.out.println("MYPAIR: " + mlDataPair);
             }
         }
 

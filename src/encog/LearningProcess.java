@@ -32,7 +32,7 @@ public class LearningProcess {
 
         for(MLDataPair pair : propagation.getTraining())
         {
-            sb.append("\tPair: ").append(pair).append("\n");
+            sb.append("\tPair of propagation: ").append(pair).append("\n");
         }
 
         System.out.println(sb.toString());
@@ -57,10 +57,16 @@ public class LearningProcess {
 
         for(Map.Entry<String, MLDataSet> entry: trainingSet.getTrainingSets().entrySet()){
 
+            /*for(int i = 0; i < entry.getValue().size(); i++)
+            {
+                System.out.println(i + ": " + entry.getValue().get(i));
+            }*/
+
             MLDataSet currentSet = entry.getValue();
             System.out.println(currentSet.size());
 
             Propagation propagation = new ResilientPropagation(myNetwork.getNetwork(), currentSet);
+            System.out.println("Current set: " + currentSet);
             propagation.setThreadCount(4);
 
             ArrayList<Integer> missingValues = Converter.readArrayFromString(entry.getKey());
