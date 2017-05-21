@@ -7,9 +7,12 @@ import org.encog.ml.data.MLDataSet;
 import org.encog.neural.flat.FlatNetwork;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.networks.training.propagation.Propagation;
+import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 import org.encog.neural.pattern.FeedForwardPattern;
 import org.encog.neural.prune.PruneIncremental;
 import org.encog.neural.prune.PruneSelective;
+import utils.Converter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +41,16 @@ public class MyNetwork {
         this.inputSize = inputSize;
         this.outputSize = outputSize;
         this.activationFunction = activationFunction;
+    }
+
+    public void train(MLDataSet trainingSet, double maxError){
+
+        Propagation propagation = new ResilientPropagation(this.network, trainingSet);
+        propagation.setThreadCount(4);
+
+        LearningProcess.iterateWithRule(propagation, maxError);
+        System.out.println("Time elapsed during training: " + Converter.nanosecondsToSeconds(LearningProcess.getElapsedTime()) + " seconds.");
+
     }
 
 

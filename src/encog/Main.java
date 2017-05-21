@@ -96,11 +96,7 @@ public class Main {
 				return;
 			}
 
-			Propagation propagation = new ResilientPropagation(network.getNetwork(), trainingSet);
-			propagation.setThreadCount(4);
-
-			LearningProcess.iterateWithRule(propagation, maxError);
-			System.out.println("Time elapsed during training: " + Converter.nanosecondsToSeconds(LearningProcess.getElapsedTime()) + " seconds.");
+			network.train(trainingSet, maxError);
 		}
 		else{
 			network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
@@ -108,7 +104,7 @@ public class Main {
 
 
 		// test the neural network
-		int rightCounter = 0;
+		/*int rightCounter = 0;
 
 		System.out.println("Neural Network Results:");
 		for(MLDataPair pair: trainingSet ) {
@@ -120,11 +116,13 @@ public class Main {
 		}
 
 		postNetworkLayersInfo(network.getNetwork(), networkName);
-		System.out.println("Got " + rightCounter + " of " + trainingSet.size());
+		System.out.println("Got " + rightCounter + " of " + trainingSet.size());*/
 
 		EncogDirectoryPersistence.saveObject(networkFile, network.getNetwork());
 
 		Encog.getInstance().shutdown();
+
+		return;
 	}
 
 
