@@ -46,6 +46,8 @@ public class LearningProcess {
             epoch++;
         } while(propagation.getError() > maxError);
 
+        Main.currentAccuracy = propagation.getError();
+
         propagation.finishTraining();
 
         // finish counting time

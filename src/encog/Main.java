@@ -33,7 +33,7 @@ import java.util.ArrayList;
 public class Main {
 
 	public static final String NETWORK_FOLDER = "neural_networks/";
-
+    public static double currentAccuracy;
 
 	public static void run(ArrfReader reader, boolean normalizeDataSets, double maxError){
 

@@ -44,9 +44,7 @@ public class NetworkPanel extends JPanel {
                            ArrfReader reader = new ArrfReader("dataset/" + file + ".arff", useMean.isSelected());
                            Main.run(reader, normalize.isSelected(), (double) maxError.getValue());
 
-		                   // TODO return accuracy;
-
-                           return null;
+		                   return Main.currentAccuracy;
 		               }
 
 		               @Override
@@ -117,14 +115,12 @@ public class NetworkPanel extends JPanel {
 	}
 
 	private void reset() {
-		// TODO network.setReady(false);
+
 		trainNetworkBtn.setEnabled(false);
 		calcPanel.getCalculateButton().setEnabled(false);
 		accuracyLbl.setVisible(false);
 		accuracyTextLbl.setVisible(false);
 		stateLabel.setText("Learning...");
-
-		// TODO network.getRule().setMaxError((Double)maxError.getValue());
 		
 	} 
 	
