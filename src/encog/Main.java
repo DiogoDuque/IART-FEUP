@@ -51,9 +51,9 @@ public class Main {
         if(!networkFolder.exists())
            networkFolder.mkdir();
 
-        File dir = new File(LOGS_FOLDER);
-        if(!dir.exists())
-            dir.mkdir();
+        File logsFolder = new File(LOGS_FOLDER);
+        if(!logsFolder.exists())
+            logsFolder.mkdir();
 
         Main.reader = reader;
 
@@ -102,9 +102,6 @@ public class Main {
 
         MyNetwork network;
 
-        File dir = new File(NETWORK_FOLDER);
-        if(!dir.exists())
-            dir.mkdir();
         File networkFile = new File(NETWORK_FOLDER + networkName + ".eg");
         if(!networkFile.exists())
         {
