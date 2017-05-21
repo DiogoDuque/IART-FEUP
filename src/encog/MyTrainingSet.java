@@ -23,41 +23,6 @@ public class MyTrainingSet {
         this.output = output;
 
         this.trainingSets = new HashMap<>();
-
-        divideInputByMissingValues();
-    }
-
-    private void divideInputByMissingValues(){
-
-        for(int i = 0; i < this.input.length; i++)
-        {
-            byte[] missingValuesArray = NN.getMissingValues(this.input[i]);
-            String missingValues = Arrays.toString(missingValuesArray);
-
-            MLData input = new BasicMLData(this.input[i]);
-            MLData output = new BasicMLData(this.output[i]);
-
-            MLDataPair mlDataPair = new BasicMLDataPair(input, output);
-
-            MLDataSet set;
-
-            // if there isn't a training set for this pattern of MVs, create a new one
-            if(!this.trainingSets.containsKey(missingValues))
-            {
-                set = new BasicMLDataSet();
-                set.add(mlDataPair);
-                System.out.println("MYPAIR: " + mlDataPair);
-
-                this.trainingSets.put(missingValues, set);
-            }
-            else
-            {
-                set = this.trainingSets.get(missingValues);
-                set.add(mlDataPair);
-                System.out.println("MYPAIR: " + mlDataPair);
-            }
-        }
-
     }
 
     public void normalize(Normalizer normalizer){

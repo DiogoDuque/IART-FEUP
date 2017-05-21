@@ -24,6 +24,7 @@ public class NetworkPanel extends JPanel {
 	private JLabel stateLabel;
 	
 	private JSpinner maxError;
+	private JSpinner maxIterations;
 	private JCheckBox normalize;
 	private JCheckBox useMean;
 	
@@ -35,7 +36,7 @@ public class NetworkPanel extends JPanel {
 		this.setLayout(null);
 		
 		trainNetworkBtn = new JButton("<html>Create<br/>& Train</html>");
-		trainNetworkBtn.setBounds(500, 11, 90, 51);
+		trainNetworkBtn.setBounds(650, 11, 90, 51);
 		trainNetworkBtn.addActionListener(new ActionListener() {
 		       public void actionPerformed(ActionEvent ae){		    	   
 		    	   SwingWorker<Double, Object> swingWorker = new SwingWorker<Double, Object>() {
@@ -43,7 +44,7 @@ public class NetworkPanel extends JPanel {
 		               protected Double doInBackground() throws Exception {
 		            	   String file = (String) datasetComboBox.getSelectedItem();
                            ArrfReader reader = new ArrfReader("dataset/" + file + ".arff", useMean.isSelected());
-                           MyNetwork myNetwork = Main.run(reader, normalize.isSelected(), (double) maxError.getValue());
+                           MyNetwork myNetwork = Main.run(reader, normalize.isSelected(), (double) maxError.getValue(), (int) maxIterations.getValue());
                            calcPanel.setMyNetwork(myNetwork);
 
 		                   return Main.currentAccuracy;
@@ -70,8 +71,8 @@ public class NetworkPanel extends JPanel {
 		});
 		this.add(trainNetworkBtn);
 		
-		stateLabel = new JLabel("Network not trained!");
-		stateLabel.setBounds(600, 11, 250, 51);
+		stateLabel = new JLabel("<html>Network not<br> trained!</html>");
+		stateLabel.setBounds(750, 11, 250, 51);
 		this.add(stateLabel);
 		
 		datasetComboBox = new JComboBox<String>(datasets);
@@ -92,7 +93,6 @@ public class NetworkPanel extends JPanel {
 		accuracyLbl.setBounds(190, 42, 100, 20);
 		this.add(accuracyLbl);
 
-
 		maxError = new JSpinner();
 		maxError.setModel(new SpinnerNumberModel(0.15, 0.0001, 1.0, 0.01));
 		maxError.setBounds(400, 11, 90, 20);
@@ -104,13 +104,24 @@ public class NetworkPanel extends JPanel {
 		maxErrorLbl.setLabelFor(maxError);
 		this.add(maxErrorLbl);
 
+		maxIterations = new JSpinner();
+		maxIterations.setModel(new SpinnerNumberModel(5000, 0, 100000000, 100));
+		maxIterations.setBounds(400, 42, 90, 20);
+		maxIterations.setEditor(new JSpinner.NumberEditor(maxIterations, "0"));
+		this.add(maxIterations);
+
+		JLabel maxIterationsLbl = new JLabel("Max Iter:");
+		maxIterationsLbl.setBounds(300, 42, 90, 14);
+		maxIterationsLbl.setLabelFor(maxError);
+		this.add(maxIterationsLbl);
+
 		normalize = new JCheckBox("Normalize");
-		normalize.setBounds(250, 42, 100, 20);
+		normalize.setBounds(500, 11, 100, 20);
 		normalize.setSelected(true);
 		this.add(normalize);
 
         useMean = new JCheckBox("Use mean");
-        useMean.setBounds(375, 42, 100, 20);
+        useMean.setBounds(500, 42, 100, 20);
         useMean.setSelected(true);
         this.add(useMean);
 
@@ -127,7 +138,6 @@ public class NetworkPanel extends JPanel {
 	} 
 	
 	private void result(double accuracy) {
-		// TODO network.setReady(true);
 		trainNetworkBtn.setEnabled(true);
 		calcPanel.getCalculateButton().setEnabled(true);
 		accuracyLbl.setText(String.format( "%.2f", accuracy*100 ) + " %");

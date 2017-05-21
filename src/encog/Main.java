@@ -45,7 +45,16 @@ public class Main {
     public static double currentAccuracy;
     public static ArrfReader reader;
 
-    public static MyNetwork run(ArrfReader reader, boolean normalizeDataSets, double maxError){
+    public static MyNetwork run(ArrfReader reader, boolean normalizeDataSets, double maxError, int maxIterations){
+
+        File networkFolder = new File(NETWORK_FOLDER);
+        if(!networkFolder.exists())
+           networkFolder.mkdir();
+
+        File dir = new File(LOGS_FOLDER);
+        if(!dir.exists())
+            dir.mkdir();
+
         Main.reader = reader;
 
         StringBuilder networkNameBuilder = new StringBuilder();
@@ -108,9 +117,13 @@ public class Main {
                 return null;
             }
 
-            network.train(trainingSet, maxError);
+            System.out.println("Max iter:" + maxIterations);
+
+            network.train(trainingSet, maxError, maxIterations);
+
 
             logInfoToFile(LOGS_FOLDER + networkName + ".txt", network.getNetwork(), networkName);
+
         }
         else{
             network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
@@ -119,15 +132,12 @@ public class Main {
 
         network.setNormalizer(normalizer);
 
+
         EncogDirectoryPersistence.saveObject(networkFile, network.getNetwork());
 
         Encog.getInstance().shutdown();
 
         return network;
-    }
-
-    public void testHiddenLayerSize(ArrfReader reader, boolean normalizeDataSets, double maxError, int hiddenLayerSize){
-
     }
 
 
@@ -157,9 +167,6 @@ public class Main {
     }
 
     public static void logInfoToFile(String filepath, BasicNetwork network, String networkName){
-        File dir = new File(LOGS_FOLDER);
-        if(!dir.exists())
-            dir.mkdir();
 
         try {
             PrintWriter out = new PrintWriter(filepath);

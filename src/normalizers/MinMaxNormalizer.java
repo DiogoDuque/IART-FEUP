@@ -108,8 +108,6 @@ public class MinMaxNormalizer implements normalizers.Normalizer {
         MinMaxNormalizer minMaxNormalizer = new MinMaxNormalizer(-1, 1);
         minMaxNormalizer.normalizeDataSet(set);
 
-        //System.out.println(Arrays.toString(set.getRowAt(1).getInput()));
-        System.out.println(set);
     }
 
     @Override

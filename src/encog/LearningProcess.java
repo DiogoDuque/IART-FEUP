@@ -23,19 +23,10 @@ public class LearningProcess {
      * @param propagation The propagation object.
      * @param maxError The maximum propagation error.
      */
-    public static void iterateWithRule(Propagation propagation, double maxError){
+    public static void iterateWithRule(Propagation propagation, double maxError, int maxIterations){
 
         // begin counting time
         elapsedTime = System.nanoTime();
-
-        StringBuilder sb = new StringBuilder();
-
-        for(MLDataPair pair : propagation.getTraining())
-        {
-            sb.append("\tPair of propagation: ").append(pair).append("\n");
-        }
-
-        System.out.println(sb.toString());
 
         epoch = 1;
 
@@ -44,6 +35,10 @@ public class LearningProcess {
 
             System.out.println("Epoch #" + epoch + " Error:" + propagation.getError());
             epoch++;
+
+            if(epoch > maxIterations)
+                break;
+
         } while(propagation.getError() > maxError);
 
         Main.currentAccuracy = 1 - propagation.getError();
@@ -54,31 +49,6 @@ public class LearningProcess {
         elapsedTime = System.nanoTime() - elapsedTime;
 
     }
-
-    public static void train(MyNetwork myNetwork, MyTrainingSet trainingSet, double maxError) throws Exception {
-
-        for(Map.Entry<String, MLDataSet> entry: trainingSet.getTrainingSets().entrySet()){
-
-            /*for(int i = 0; i < entry.getValue().size(); i++)
-            {
-                System.out.println(i + ": " + entry.getValue().get(i));
-            }*/
-
-            MLDataSet currentSet = entry.getValue();
-            System.out.println(currentSet.size());
-
-            Propagation propagation = new ResilientPropagation(myNetwork.getNetwork(), currentSet);
-            System.out.println("Current set: " + currentSet);
-            propagation.setThreadCount(4);
-
-            ArrayList<Integer> missingValues = Converter.readArrayFromString(entry.getKey());
-
-            iterateWithRule(propagation, maxError);
-        }
-
-    }
-
-
 
     /**
      *

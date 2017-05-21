@@ -47,12 +47,12 @@ public class MyNetwork {
         this.activationFunction = activationFunction;
     }
 
-    public void train(MLDataSet trainingSet, double maxError){
+    public void train(MLDataSet trainingSet, double maxError, int maxIterations){
 
         Propagation propagation = new ResilientPropagation(this.network, trainingSet);
         propagation.setThreadCount(4);
 
-        LearningProcess.iterateWithRule(propagation, maxError);
+        LearningProcess.iterateWithRule(propagation, maxError, maxIterations);
         System.out.println("Time elapsed during training: " + Converter.nanosecondsToSeconds(LearningProcess.getElapsedTime()) + " seconds.");
 
     }
