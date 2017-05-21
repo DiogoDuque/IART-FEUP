@@ -187,6 +187,10 @@ public class ArrfReader {
 
     }
 
+    public double getMeanOfColumn(int i){
+        return this.dataInstances.meanOrMode(i);
+    }
+
     public boolean isTreatMVsWithMean() {
         return treatMVsWithMean;
     }

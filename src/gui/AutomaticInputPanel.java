@@ -1,5 +1,7 @@
 package gui;
 
+import encog.Main;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -44,7 +46,7 @@ public class AutomaticInputPanel extends JPanel {
 			try
 			{
 				if(values[i].equalsIgnoreCase("?")) {
-					data[i] = NULLVAL;	// so it allows people to declare missing values on the automatic input field
+					data[i] = Main.reader.getMeanOfColumn(i);	// so it does not affect
 				}
 				else {
 					data[i] = Double.valueOf(values[i]);

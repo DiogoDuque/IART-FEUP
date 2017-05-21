@@ -18,7 +18,6 @@ import javax.swing.border.LineBorder;
 public class NetworkGui extends JFrame {
 
 	private JPanel contentPane;
-	private MyNetwork myNetwork;
 
 	/**
 	 * Launch the application.

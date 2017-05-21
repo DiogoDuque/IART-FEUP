@@ -34,8 +34,11 @@ public class Main {
 
 	public static final String NETWORK_FOLDER = "neural_networks/";
     public static double currentAccuracy;
+    public static ArrfReader reader;
 
 	public static MyNetwork run(ArrfReader reader, boolean normalizeDataSets, double maxError){
+
+	    Main.reader = reader;
 
 		StringBuilder networkNameBuilder = new StringBuilder();
 
