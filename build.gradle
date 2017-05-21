@@ -22,8 +22,6 @@ dependencies {
 
 }
 
-//mainClassName = 'encog.HelloWorld'
-
 sourceSets {
     main {
         java {

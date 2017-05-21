@@ -93,6 +93,9 @@ public class Main {
 
         MyNetwork network;
 
+        File dir = new File(NETWORK_FOLDER);
+        if(!dir.exists())
+            dir.mkdir();
         File networkFile = new File(NETWORK_FOLDER + networkName + ".eg");
         if(!networkFile.exists())
         {
