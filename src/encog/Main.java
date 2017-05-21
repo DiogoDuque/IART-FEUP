@@ -16,7 +16,14 @@ import org.encog.neural.networks.training.propagation.resilient.ResilientPropaga
 import utils.Converter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * XOR: This example is essentially the "Hello World" of neural network
@@ -33,97 +40,132 @@ import java.util.ArrayList;
 public class Main {
 
 	public static final String NETWORK_FOLDER = "neural_networks/";
+	public static final String LOGS_FOLDER = "logs/";
+
     public static double currentAccuracy;
     public static ArrfReader reader;
 
-	public static MyNetwork run(ArrfReader reader, boolean normalizeDataSets, double maxError){
+    public static MyNetwork run(ArrfReader reader, boolean normalizeDataSets, double maxError){
+        Main.reader = reader;
 
-	    Main.reader = reader;
+        StringBuilder networkNameBuilder = new StringBuilder();
 
-		StringBuilder networkNameBuilder = new StringBuilder();
+        if(normalizeDataSets)
+        {
+            networkNameBuilder.append("normalized_");
+        }
+        else
+        {
+            networkNameBuilder.append("non-normalized_");
+        }
 
-		if(normalizeDataSets)
-		{
-			networkNameBuilder.append("normalized_");
-		}
-		else
-		{
-			networkNameBuilder.append("non-normalized_");
-		}
+        if(reader.isTreatMVsWithMean()){
+            networkNameBuilder.append("mean_");
+        }
+        else
+        {
+            networkNameBuilder.append("default-value");
+        }
 
-		if(reader.isTreatMVsWithMean()){
-			networkNameBuilder.append("mean");
-		}
-		else
-		{
-			networkNameBuilder.append("default-value");
-		}
+        networkNameBuilder.append(maxError);
 
-		networkNameBuilder.append(maxError);
+        String networkName = networkNameBuilder.toString();
 
-		String networkName = networkNameBuilder.toString();
+        ArrayList<double[][]> inputAndOutput = reader.getInputAndOutput();
 
-		ArrayList<double[][]> inputAndOutput = reader.getInputAndOutput();
+        double input[][] = inputAndOutput.get(0);
+        double output[][] = inputAndOutput.get(1);
 
-		double input[][] = inputAndOutput.get(0);
-		double output[][] = inputAndOutput.get(1);
+        int numInputNeurons = input[0].length;
+        int numOutputNeurons = output[0].length;
 
-		int numInputNeurons = input[0].length;
-		int numOutputNeurons = output[0].length;
+        System.out.println(numInputNeurons + " input neurons and " + numOutputNeurons + " output neurons.");
 
-		System.out.println(numInputNeurons + " input neurons and " + numOutputNeurons + " output neurons.");
-
-		// create training data
-		MLDataSet trainingSet = new BasicMLDataSet(input, output);
+        // create training data
+        MLDataSet trainingSet = new BasicMLDataSet(input, output);
         Normalizer normalizer = null;
 
-		// Normalization
-		if(normalizeDataSets) {
-			normalizer = new MinMaxNormalizer(0, 1);
-			normalizer.normalizeDataSet(trainingSet);
-		}
+        // Normalization
+        if(normalizeDataSets) {
+            normalizer = new MinMaxNormalizer(0, 1);
+            normalizer.normalizeDataSet(trainingSet);
+        }
 
-		MyNetwork network;
+        MyNetwork network;
 
-		File networkFile = new File(NETWORK_FOLDER + networkName + ".eg");
-		if(!networkFile.exists())
-		{
-			// create new network
-			network = new MyNetwork(networkName, numInputNeurons, numOutputNeurons, new ActivationSigmoid());
+        File networkFile = new File(NETWORK_FOLDER + networkName + ".eg");
+        if(!networkFile.exists())
+        {
+            // create new network
+            network = new MyNetwork(networkName, numInputNeurons, numOutputNeurons, new ActivationSigmoid());
 
-			// adapt to set
-			try {
-				network.adapt(trainingSet);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("Could not adapt training set to network.");
-				return null;
-			}
+            // adapt to set
+            try {
+                network.createLayersAuto(trainingSet);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Could not adapt training set to network.");
+                return null;
+            }
 
-			network.train(trainingSet, maxError);
-		}
-		else{
-			network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
-		    currentAccuracy = 1 - network.getNetwork().calculateError(trainingSet);
-		}
+            network.train(trainingSet, maxError);
 
-		network.setNormalizer(normalizer);
+            logInfoToFile(LOGS_FOLDER + networkName + ".txt", network.getNetwork(), networkName);
+        }
+        else{
+            network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
+            currentAccuracy = 1 - network.getNetwork().calculateError(trainingSet);
+        }
 
-		EncogDirectoryPersistence.saveObject(networkFile, network.getNetwork());
+        network.setNormalizer(normalizer);
 
-		Encog.getInstance().shutdown();
+        EncogDirectoryPersistence.saveObject(networkFile, network.getNetwork());
 
-		return network;
-	}
+        Encog.getInstance().shutdown();
+
+        return network;
+    }
+
+    public void testHiddenLayerSize(ArrfReader reader, boolean normalizeDataSets, double maxError, int hiddenLayerSize){
+
+    }
 
 
-    public static void postNetworkLayersInfo(BasicNetwork network, String networkName)
+    public static String printInfo(BasicNetwork network, String networkName)
     {
-        System.out.println("Name: " + networkName);
-        System.out.println("Layers: ");
+        DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("---------------------------------------").append("\n");
+
+        sb.append("Current time: ").append(sdf.format(new Date())).append("\n\n");
+        sb.append("Name: ").append(networkName).append("\n");
+        sb.append("Layers: ").append("\n");
         for(int i = 0; i < network.getLayerCount(); i++)
         {
-            System.out.println("\tLayer " + (i+1) + ": " + network.getLayerNeuronCount(i) + " neurons");
+            sb.append("\tLayer " + (i+1) + ": " + network.getLayerNeuronCount(i) + " neurons").append("\n");
         }
+
+        sb.append(LearningProcess.trainingInfo()).append("\n");
+
+        sb.append("---------------------------------------").append("\n");
+
+        System.out.println(sb.toString());
+
+        return sb.toString();
+    }
+
+    public static void logInfoToFile(String filepath, BasicNetwork network, String networkName){
+
+        try {
+            PrintWriter out = new PrintWriter(filepath);
+            out.write(printInfo(network, networkName));
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }

@@ -111,4 +111,14 @@ public class LearningProcess {
         }
 
     }
+
+    public static String trainingInfo(){
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Last iteration: ").append("\t").append(epoch).append("\n");
+        sb.append("Time elapsed during training: ").append("\t").append(Converter.nanosecondsToSeconds(elapsedTime)).append(" seconds.").append("\n");
+
+        return sb.toString();
+    }
 }

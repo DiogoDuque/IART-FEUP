@@ -78,8 +78,11 @@ public class MyNetwork {
 		System.out.println("Got " + rightCounter + " of " + dataSet.size());
     }
 
-    public void adapt(MLDataSet trainingSet) throws Exception {
+    public void createLayersAuto(MLDataSet trainingSet) throws Exception {
+        createLayers(trainingSet, getHiddenLayerSize(trainingSet));
+    }
 
+    private void createLayers(MLDataSet trainingSet, int hiddenLayerSize) throws Exception {
         if(outputSize != trainingSet.getIdealSize())
         {
             throw new Exception("Training set output size is " + trainingSet.getIdealSize()
@@ -93,7 +96,7 @@ public class MyNetwork {
         }
 
         this.network.addLayer(new BasicLayer(null,true, this.inputSize));
-        this.network.addLayer(new BasicLayer(this.activationFunction,true,getHiddenLayerSize(trainingSet)));
+        this.network.addLayer(new BasicLayer(this.activationFunction,true,hiddenLayerSize));
         this.network.addLayer(new BasicLayer(this.activationFunction,false, this.outputSize));
         this.network.getStructure().finalizeStructure();
         this.network.reset();
