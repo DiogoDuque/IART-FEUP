@@ -11,7 +11,13 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 
+import encog.MyNetwork;
 import neuroph.Network;
+import normalizers.MinMaxNormalizer;
+import normalizers.Normalizer;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.basic.BasicMLData;
+import org.encog.ml.data.basic.BasicMLDataPair;
 
 public class CalculationPanel extends JPanel {
 	ManualInputPanel manual;
@@ -20,10 +26,9 @@ public class CalculationPanel extends JPanel {
 	private JButton calculateButton;
 	private JRadioButton autoButton;
 	private JRadioButton manualButton;
-	
-	
-	
-	
+
+	MyNetwork myNetwork;
+
 	/**
 	 * Create the panel.
 	 */
@@ -67,13 +72,17 @@ public class CalculationPanel extends JPanel {
 
                    System.out.println("Input raw array: ");
                    System.out.println(Arrays.toString(data));
-		    	   double[] normalizedData = Network.normalizer.normalizeInputArray(data);
+
+
+		    	   double[] normalizedData = myNetwork.getNormalizer().normalizeInputArray(data);
+
                    System.out.println("Input normalized array: ");
                    System.out.println(Arrays.toString(normalizedData));
 
-                   // TODO double result = Network.ask(network.getNetwork(), normalizedData);
+
+                   double result = myNetwork.ask(new BasicMLData(normalizedData));
 		    	   
-		    	   // TODO resultLabel.setText("The neural network says: " + result);
+		    	   resultLabel.setText("The neural network says: " + result);
 		       }
 		       
 		       
@@ -81,12 +90,13 @@ public class CalculationPanel extends JPanel {
 		this.add(calculateButton);
 		
 		resultLabel = new JLabel("");
-		resultLabel.setBounds(330, 11, 600, 45);
+		resultLabel.setBounds(550, 11, 600, 45);
 		this.add(resultLabel);
 	}
 
-
-
+	public void setMyNetwork(MyNetwork myNetwork) {
+		this.myNetwork = myNetwork;
+	}
 
 	public JButton getCalculateButton() {
 		return calculateButton;

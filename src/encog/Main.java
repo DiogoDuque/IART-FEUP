@@ -35,7 +35,7 @@ public class Main {
 	public static final String NETWORK_FOLDER = "neural_networks/";
     public static double currentAccuracy;
 
-	public static void run(ArrfReader reader, boolean normalizeDataSets, double maxError){
+	public static MyNetwork run(ArrfReader reader, boolean normalizeDataSets, double maxError){
 
 		StringBuilder networkNameBuilder = new StringBuilder();
 
@@ -72,10 +72,11 @@ public class Main {
 
 		// create training data
 		MLDataSet trainingSet = new BasicMLDataSet(input, output);
+        Normalizer normalizer = null;
 
 		// Normalization
 		if(normalizeDataSets) {
-			Normalizer normalizer = new MinMaxNormalizer(0, 1);
+			normalizer = new MinMaxNormalizer(0, 1);
 			normalizer.normalizeDataSet(trainingSet);
 		}
 
@@ -93,36 +94,23 @@ public class Main {
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Could not adapt training set to network.");
-				return;
+				return null;
 			}
 
 			network.train(trainingSet, maxError);
 		}
 		else{
 			network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
+		    currentAccuracy = 1 - network.getNetwork().calculateError(trainingSet);
 		}
 
-
-		// test the neural network
-		/*int rightCounter = 0;
-
-		System.out.println("Neural Network Results:");
-		for(MLDataPair pair: trainingSet ) {
-			final MLData outputData = network.getNetwork().compute(pair.getInput());
-			//System.out.println(pair.getInput() + ", actual=" + outputData.getData(0) + ",ideal=" + pair.getIdeal().getData(0));
-
-			if(outputData.getData(0) - pair.getIdeal().getData(0) < 0.5)
-				rightCounter++;
-		}
-
-		postNetworkLayersInfo(network.getNetwork(), networkName);
-		System.out.println("Got " + rightCounter + " of " + trainingSet.size());*/
+		network.setNormalizer(normalizer);
 
 		EncogDirectoryPersistence.saveObject(networkFile, network.getNetwork());
 
 		Encog.getInstance().shutdown();
 
-		return;
+		return network;
 	}
 
 

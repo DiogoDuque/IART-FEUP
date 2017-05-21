@@ -1,8 +1,11 @@
 package encog;
 
+import normalizers.Normalizer;
 import org.encog.ConsoleStatusReportable;
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
 import org.encog.neural.flat.FlatNetwork;
 import org.encog.neural.networks.BasicNetwork;
@@ -24,6 +27,7 @@ public class MyNetwork {
     private ActivationFunction activationFunction;
     private BasicNetwork network;
     private boolean ready;
+    private Normalizer normalizer;
 
     public MyNetwork(String name, int inputSize, int outputSize, ActivationFunction activationFunction) {
 
@@ -53,6 +57,26 @@ public class MyNetwork {
 
     }
 
+    public double ask (MLData input){
+
+        return this.network.compute(input).getData(0);
+
+    }
+    public void test(MLDataSet dataSet){
+        // test the neural network
+		int rightCounter = 0;
+
+		System.out.println("Neural Network Results:");
+		for(MLDataPair pair: dataSet ) {
+			final MLData outputData = this.network.compute(pair.getInput());
+			//System.out.println(pair.getInput() + ", actual=" + outputData.getData(0) + ",ideal=" + pair.getIdeal().getData(0));
+
+			if(outputData.getData(0) - pair.getIdeal().getData(0) < 0.5)
+				rightCounter++;
+		}
+
+		System.out.println("Got " + rightCounter + " of " + dataSet.size());
+    }
 
     public void adapt(MLDataSet trainingSet) throws Exception {
 
@@ -104,6 +128,14 @@ public class MyNetwork {
 
     public boolean isReady() {
         return ready;
+    }
+
+    public Normalizer getNormalizer() {
+        return normalizer;
+    }
+
+    public void setNormalizer(Normalizer normalizer) {
+        this.normalizer = normalizer;
     }
 
     public void setReady(boolean ready) {

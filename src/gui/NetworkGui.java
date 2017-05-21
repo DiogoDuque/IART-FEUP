@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import encog.MyNetwork;
 import neuroph.Network;
 
 import java.awt.Color;
@@ -17,6 +18,7 @@ import javax.swing.border.LineBorder;
 public class NetworkGui extends JFrame {
 
 	private JPanel contentPane;
+	private MyNetwork myNetwork;
 
 	/**
 	 * Launch the application.

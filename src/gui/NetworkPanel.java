@@ -1,6 +1,7 @@
 package gui;
 
 import encog.Main;
+import encog.MyNetwork;
 import reader.ArrfReader;
 
 import java.awt.event.ActionEvent;
@@ -14,7 +15,7 @@ public class NetworkPanel extends JPanel {
 	private static final String[] datasets = {"test2", "test", "1year", "2year", "3year", "4year", "5year"};
 
 	private CalculationPanel calcPanel;
-	
+
 	private JButton trainNetworkBtn;
 	private JComboBox<String> datasetComboBox;
 	private JLabel datasetComboBoxLbl;
@@ -42,7 +43,8 @@ public class NetworkPanel extends JPanel {
 		               protected Double doInBackground() throws Exception {
 		            	   String file = (String) datasetComboBox.getSelectedItem();
                            ArrfReader reader = new ArrfReader("dataset/" + file + ".arff", useMean.isSelected());
-                           Main.run(reader, normalize.isSelected(), (double) maxError.getValue());
+                           MyNetwork myNetwork = Main.run(reader, normalize.isSelected(), (double) maxError.getValue());
+                           calcPanel.setMyNetwork(myNetwork);
 
 		                   return Main.currentAccuracy;
 		               }
