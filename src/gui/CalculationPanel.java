@@ -37,11 +37,11 @@ public class CalculationPanel extends JPanel {
 		this.auto = auto;
 		
 		manualButton = new JRadioButton("Use Manual Input");
-		manualButton.setBounds(6, 7, 141, 23);
+		manualButton.setBounds(6, 7, 200, 23);
 		this.add(manualButton);
 		
 		autoButton = new JRadioButton("Use Automatic Input");
-		autoButton.setBounds(6, 33, 141, 23);
+		autoButton.setBounds(6, 33, 200, 23);
 		autoButton.setSelected(true);
 		this.add(autoButton);
 		
@@ -53,7 +53,7 @@ public class CalculationPanel extends JPanel {
 		
 		calculateButton = new JButton("Calculate");
 		calculateButton.setEnabled(false);
-		calculateButton.setBounds(153, 7, 89, 49);
+		calculateButton.setBounds(220, 7, 300, 49);
 		calculateButton.addActionListener(new ActionListener() {
 		       public void actionPerformed(ActionEvent ae){
 		    	   double[] data;
@@ -83,7 +83,7 @@ public class CalculationPanel extends JPanel {
 		this.add(calculateButton);
 		
 		resultLabel = new JLabel("");
-		resultLabel.setBounds(252, 11, 592, 45);
+		resultLabel.setBounds(330, 11, 600, 45);
 		this.add(resultLabel);
 	}
 

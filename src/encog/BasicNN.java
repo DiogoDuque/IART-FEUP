@@ -34,36 +34,29 @@ public class BasicNN {
 
 	public static final String NETWORK_FOLDER = "neural_networks/";
 
-	/**
-	 * The main method.
-	 * @param args No arguments are used.
-	 */
-	public static void main(final String args[]) {
 
-        ArrfReader reader = new ArrfReader("./dataset/"+ "test2" + ".arff", true);
-	    boolean normalizeDataSets = false;
-	    double maxError = 0.15;
+	public void run(ArrfReader reader, boolean normalizeDataSets, double maxError){
 
-	    StringBuilder networkNameBuilder = new StringBuilder();
+		StringBuilder networkNameBuilder = new StringBuilder();
 
-	    if(normalizeDataSets)
-        {
-            networkNameBuilder.append("normalized_");
-        }
-        else
-        {
-            networkNameBuilder.append("non-normalized_");
-        }
+		if(normalizeDataSets)
+		{
+			networkNameBuilder.append("normalized_");
+		}
+		else
+		{
+			networkNameBuilder.append("non-normalized_");
+		}
 
-        if(reader.isTreatMVsWithMean()){
-            networkNameBuilder.append("mean");
-        }
-        else
-        {
-            networkNameBuilder.append("default-value");
-        }
+		if(reader.isTreatMVsWithMean()){
+			networkNameBuilder.append("mean");
+		}
+		else
+		{
+			networkNameBuilder.append("default-value");
+		}
 
-        networkNameBuilder.append(maxError);
+		networkNameBuilder.append(maxError);
 
 		String networkName = networkNameBuilder.toString();
 
@@ -91,30 +84,30 @@ public class BasicNN {
 		File networkFile = new File(NETWORK_FOLDER + networkName + ".eg");
 		if(!networkFile.exists())
 		{
-		    // create new network
-            network = new MyNetwork(networkName, numInputNeurons, numOutputNeurons, new ActivationSigmoid());
+			// create new network
+			network = new MyNetwork(networkName, numInputNeurons, numOutputNeurons, new ActivationSigmoid());
 
-            // adapt to set
-            try {
-                network.adapt(trainingSet);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Could not adapt training set to network.");
-                return;
-            }
+			// adapt to set
+			try {
+				network.adapt(trainingSet);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Could not adapt training set to network.");
+				return;
+			}
 
 			Propagation propagation = new ResilientPropagation(network.getNetwork(), trainingSet);
 			propagation.setThreadCount(4);
 
 			LearningProcess.iterateWithRule(propagation, maxError);
-            System.out.println("Time elapsed during training: " + Converter.nanosecondsToSeconds(LearningProcess.getElapsedTime()) + " seconds.");
-        }
+			System.out.println("Time elapsed during training: " + Converter.nanosecondsToSeconds(LearningProcess.getElapsedTime()) + " seconds.");
+		}
 		else{
-            network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
-        }
+			network = new MyNetwork(networkName, (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile), numInputNeurons, numOutputNeurons, new ActivationSigmoid());
+		}
 
 
-        // test the neural network
+		// test the neural network
 		int rightCounter = 0;
 
 		System.out.println("Neural Network Results:");
@@ -133,7 +126,6 @@ public class BasicNN {
 
 		Encog.getInstance().shutdown();
 	}
-
 
 
     public static void postNetworkLayersInfo(BasicNetwork network, String networkName)
