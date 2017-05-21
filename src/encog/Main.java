@@ -157,6 +157,9 @@ public class Main {
     }
 
     public static void logInfoToFile(String filepath, BasicNetwork network, String networkName){
+        File dir = new File(LOGS_FOLDER);
+        if(!dir.exists())
+            dir.mkdir();
 
         try {
             PrintWriter out = new PrintWriter(filepath);
