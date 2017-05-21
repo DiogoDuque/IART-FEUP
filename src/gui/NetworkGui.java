@@ -17,7 +17,6 @@ import javax.swing.border.LineBorder;
 public class NetworkGui extends JFrame {
 
 	private JPanel contentPane;
-	private Network network;
 
 	/**
 	 * Launch the application.
@@ -40,8 +39,7 @@ public class NetworkGui extends JFrame {
 	 */
 	public NetworkGui() {
 		setTitle("Polish Companies Bankruptcy Calculator");
-		network = new Network();
-		
+
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 880, 756);
@@ -49,8 +47,6 @@ public class NetworkGui extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
-	
 		
 		JPanel manualInput = new ManualInputPanel();
 		manualInput.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -62,18 +58,15 @@ public class NetworkGui extends JFrame {
 		automaticInput.setBorder(new LineBorder(new Color(0, 0, 0)));
 		contentPane.add(automaticInput);
 		
-		JPanel calculationPanel = new CalculationPanel(network, (ManualInputPanel)manualInput, (AutomaticInputPanel)automaticInput);
+		JPanel calculationPanel = new CalculationPanel((ManualInputPanel)manualInput, (AutomaticInputPanel)automaticInput);
 		calculationPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		calculationPanel.setBounds(10, 653, 854, 65);
 		contentPane.add(calculationPanel);
 		
-		JPanel panel = new NetworkPanel(network, (CalculationPanel)calculationPanel );
+		JPanel panel = new NetworkPanel((CalculationPanel)calculationPanel );
 		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel.setBounds(10, 11, 854, 74);
 		contentPane.add(panel);
-
-
-
 		
 	}
 }

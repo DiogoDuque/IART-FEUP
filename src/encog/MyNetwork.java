@@ -20,6 +20,7 @@ public class MyNetwork {
     private int inputSize, outputSize;
     private ActivationFunction activationFunction;
     private BasicNetwork network;
+    private boolean ready;
 
     public MyNetwork(String name, int inputSize, int outputSize, ActivationFunction activationFunction) {
 
@@ -86,5 +87,13 @@ public class MyNetwork {
 
     public void setNetwork(BasicNetwork network) {
         this.network = network;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
     }
 }

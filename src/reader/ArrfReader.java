@@ -53,6 +53,7 @@ public class ArrfReader {
 
     public void process(){
         this.readFile();
+
         if(treatMVsWithMean)
             this.replaceMissingValuesWithMean();
 

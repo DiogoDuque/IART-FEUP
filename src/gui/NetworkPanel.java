@@ -1,17 +1,18 @@
 package gui;
 
+import encog.Main;
+import reader.ArrfReader;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
 
-import neuroph.Network;
 
 public class NetworkPanel extends JPanel {
 	private static final String[] datasets = {"test2", "test", "1year", "2year", "3year", "4year", "5year"};
-	
-	private Network network;
+
 	private CalculationPanel calcPanel;
 	
 	private JButton trainNetworkBtn;
@@ -23,16 +24,16 @@ public class NetworkPanel extends JPanel {
 	
 	private JSpinner maxError;
 	private JCheckBox normalize;
+	private JCheckBox useMean;
 	
-	public NetworkPanel(final Network network, final CalculationPanel calcPanel){
+	public NetworkPanel(final CalculationPanel calcPanel){
 		super();
-		
-		this.network = network;
+
 		this.calcPanel = calcPanel;
 		
 		this.setLayout(null);
 		
-		trainNetworkBtn = new JButton("Train");
+		trainNetworkBtn = new JButton("<html>Create<br/>& Train</html>");
 		trainNetworkBtn.setBounds(500, 11, 90, 51);
 		trainNetworkBtn.addActionListener(new ActionListener() {
 		       public void actionPerformed(ActionEvent ae){		    	   
@@ -40,9 +41,12 @@ public class NetworkPanel extends JPanel {
 		               @Override
 		               protected Double doInBackground() throws Exception {
 		            	   String file = (String) datasetComboBox.getSelectedItem();
-				    	   double accuracy = Network.train(network.getNetwork(), file);
+                           ArrfReader reader = new ArrfReader("dataset/" + file + ".arff", useMean.isSelected());
+                           Main.run(reader, normalize.isSelected(), (double) maxError.getValue());
 
-		                   return accuracy;
+		                   // TODO return accuracy;
+
+                           return null;
 		               }
 
 		               @Override
@@ -90,9 +94,9 @@ public class NetworkPanel extends JPanel {
 
 
 		maxError = new JSpinner();
-		maxError.setModel(new SpinnerNumberModel(0.0001, 0.0001, 1.0, 0.0001));
+		maxError.setModel(new SpinnerNumberModel(0.15, 0.0001, 1.0, 0.01));
 		maxError.setBounds(400, 11, 90, 20);
-		maxError.setEditor(new JSpinner.NumberEditor(maxError, "0.0000"));
+		maxError.setEditor(new JSpinner.NumberEditor(maxError, "0.00"));
 		this.add(maxError);
 
 		JLabel maxErrorLbl = new JLabel("Max Error:");
@@ -101,26 +105,31 @@ public class NetworkPanel extends JPanel {
 		this.add(maxErrorLbl);
 
 		normalize = new JCheckBox("Normalize");
-		normalize.setBounds(300, 42, 180, 20);
+		normalize.setBounds(250, 42, 100, 20);
 		normalize.setSelected(true);
 		this.add(normalize);
+
+        useMean = new JCheckBox("Use mean");
+        useMean.setBounds(375, 42, 100, 20);
+        useMean.setSelected(true);
+        this.add(useMean);
 
 	}
 
 	private void reset() {
-		network.setReady(false);
+		// TODO network.setReady(false);
 		trainNetworkBtn.setEnabled(false);
 		calcPanel.getCalculateButton().setEnabled(false);
 		accuracyLbl.setVisible(false);
 		accuracyTextLbl.setVisible(false);
 		stateLabel.setText("Learning...");
 
-		network.getRule().setMaxError((Double)maxError.getValue());
+		// TODO network.getRule().setMaxError((Double)maxError.getValue());
 		
 	} 
 	
 	private void result(double accuracy) {
-		network.setReady(true);
+		// TODO network.setReady(true);
 		trainNetworkBtn.setEnabled(true);
 		calcPanel.getCalculateButton().setEnabled(true);
 		accuracyLbl.setText(String.format( "%.2f", accuracy*100 ) + " %");

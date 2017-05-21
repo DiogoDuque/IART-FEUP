@@ -14,7 +14,6 @@ import javax.swing.JRadioButton;
 import neuroph.Network;
 
 public class CalculationPanel extends JPanel {
-	Network network;
 	ManualInputPanel manual;
 	AutomaticInputPanel auto;
 	private JLabel resultLabel;
@@ -28,11 +27,10 @@ public class CalculationPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public CalculationPanel(final Network network, final ManualInputPanel manual, final AutomaticInputPanel auto) {
+	public CalculationPanel(final ManualInputPanel manual, final AutomaticInputPanel auto) {
 		super();
 		this.setLayout(null);
-		
-		this.network = network;
+
 		this.manual = manual;
 		this.auto = auto;
 		
@@ -73,9 +71,9 @@ public class CalculationPanel extends JPanel {
                    System.out.println("Input normalized array: ");
                    System.out.println(Arrays.toString(normalizedData));
 
-                   double result = Network.ask(network.getNetwork(), normalizedData);
+                   // TODO double result = Network.ask(network.getNetwork(), normalizedData);
 		    	   
-		    	   resultLabel.setText("The neural network says: " + result);
+		    	   // TODO resultLabel.setText("The neural network says: " + result);
 		       }
 		       
 		       

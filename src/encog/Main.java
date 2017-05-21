@@ -30,12 +30,12 @@ import java.util.ArrayList;
  * the XORFactory example.
  * 
  */
-public class BasicNN {
+public class Main {
 
 	public static final String NETWORK_FOLDER = "neural_networks/";
 
 
-	public void run(ArrfReader reader, boolean normalizeDataSets, double maxError){
+	public static void run(ArrfReader reader, boolean normalizeDataSets, double maxError){
 
 		StringBuilder networkNameBuilder = new StringBuilder();
 
